@@ -71,6 +71,9 @@ public class ComplexMessage {
   }
 
   public Message build() {
+    if (embedBuilder.isEmpty()) {
+      return messageBuilder.build();
+    }
     return messageBuilder
         .setEmbed(embedBuilder.build())
         .build();
