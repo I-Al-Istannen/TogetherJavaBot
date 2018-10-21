@@ -1,18 +1,21 @@
 package org.togetherjava.command.commands;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.togetherjava.command.CommandGenericHelper;
 import org.togetherjava.command.CommandSource;
+import org.togetherjava.command.TJCommand;
 import org.togetherjava.messaging.MessageCategory;
 import org.togetherjava.messaging.SimpleMessage;
 
-public class PingCommand {
+public class PingCommand implements TJCommand {
 
-  public static CommandNode<CommandSource> create() {
+  @Override
+  public LiteralCommandNode<CommandSource> getCommand(CommandDispatcher<CommandSource> dispatcher) {
     return CommandGenericHelper.literal("ping")
         .then(
             CommandGenericHelper.literal("error")

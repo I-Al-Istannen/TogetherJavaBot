@@ -37,7 +37,10 @@ public class CommandListener extends ListenerAdapter {
         .maximumSize(30)
         .build();
 
-    dispatcher.getRoot().addChild(PingCommand.create());
+    RootCommandNode<CommandSource> root = dispatcher.getRoot();
+    CommandDiscovery.findCommands().stream()
+        .map(tjCommand -> tjCommand.getCommand(dispatcher))
+        .forEach(root::addChild);
   }
 
   @Override
