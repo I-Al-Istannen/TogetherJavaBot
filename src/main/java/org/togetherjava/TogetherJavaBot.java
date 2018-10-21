@@ -6,7 +6,14 @@ import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.Message;
 import org.togetherjava.command.CommandListener;
+import org.togetherjava.messaging.ComplexMessage;
+import org.togetherjava.messaging.SimpleMessage;
+import org.togetherjava.messaging.sending.DestructingMessageSender;
+import org.togetherjava.messaging.transforming.CategoryColorTransformer;
+import org.togetherjava.messaging.transforming.EmbedTransformer;
+import org.togetherjava.messaging.transforming.Transformer;
 
 public class TogetherJavaBot {
 
@@ -24,9 +31,20 @@ public class TogetherJavaBot {
    * @throws LoginException if the token is invalid or another error prevents login
    */
   public void start() throws InterruptedException, LoginException {
+    Transformer<ComplexMessage, Message> complexTransformer = new CategoryColorTransformer()
+        .then(ComplexMessage::build);
+    Transformer<SimpleMessage, Message> simpleTransformer = new EmbedTransformer()
+        .then(new CategoryColorTransformer())
+        .then(ComplexMessage::build);
+
     jda = new JDABuilder(AccountType.BOT)
         .setToken(config.getString("login.token"))
-        .addEventListener(new CommandListener(config.getString("commands.prefix")))
+        .addEventListener(
+            new CommandListener(
+                config.getString("commands.prefix"),
+                new DestructingMessageSender(config, simpleTransformer, complexTransformer)
+            )
+        )
         .build()
         .awaitReady();
   }

@@ -3,3 +3,17 @@
 
 [commands]
   prefix = "!"
+
+[messages]
+  [messages.error]
+    self-destruct = true
+    destruction-delay = 5
+  [messages.information]
+    self-destruct = true
+    destruction-delay = 5
+  [messages.success]
+    self-destruct = true
+    destruction-delay = 5
+  [messages.none]
+    self-destruct = true
+    destruction-delay = 5
