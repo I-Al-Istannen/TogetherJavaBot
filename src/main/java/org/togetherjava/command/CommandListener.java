@@ -5,15 +5,14 @@ import com.google.common.cache.CacheBuilder;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.togetherjava.command.commands.PingCommand;
 import org.togetherjava.messaging.ComplexMessage;
 import org.togetherjava.messaging.MessageCategory;
 import org.togetherjava.messaging.messages.CommandMessages;
@@ -60,6 +59,11 @@ public class CommandListener extends ListenerAdapter {
         .trim();
 
     CommandSource source = new CommandSource(message, messageSender);
+
+    if (command.isEmpty()) {
+      command = "help";
+    }
+
     ParseResults<CommandSource> parseResults = parse(command, source);
 
     if (commandFound(parseResults)) {
@@ -85,15 +89,12 @@ public class CommandListener extends ListenerAdapter {
     try {
       dispatcher.execute(parseResults);
     } catch (CommandSyntaxException e) {
-      String error = e.getMessage();
-
       ComplexMessage complexMessage = new ComplexMessage(MessageCategory.ERROR);
       EmbedBuilder embedBuilder = complexMessage.getEmbedBuilder();
 
       for (var entry : parseResults.getContext().getNodes().entrySet()) {
-        var childrenUsage = dispatcher.getSmartUsage(entry.getKey(), source).values()
-            .stream()
-            .collect(Collectors.joining(" || "));
+        var childrenUsage = String
+            .join(" || ", dispatcher.getSmartUsage(entry.getKey(), source).values());
         embedBuilder
             .addField(
                 "Arguments for '" + entry.getKey().getName() + "'",
