@@ -60,6 +60,7 @@ public class CommandListener extends ListenerAdapter {
 
     CommandSource source = new CommandSource(message, messageSender);
 
+    // Redirect to help, but without redirection
     if (command.isEmpty()) {
       command = "help";
     }
