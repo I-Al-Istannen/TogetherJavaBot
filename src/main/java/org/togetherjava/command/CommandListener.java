@@ -112,6 +112,9 @@ public class CommandListener extends ListenerAdapter {
 
     parseResults.getExceptions().values().forEach(Throwable::printStackTrace);
 
-    messageSender.sendMessage(CommandMessages.commandNotFound(), message.getChannel());
+    messageSender.sendMessage(
+        CommandMessages.commandNotFound(parseResults.getReader().getString()),
+        message.getChannel()
+    );
   }
 }

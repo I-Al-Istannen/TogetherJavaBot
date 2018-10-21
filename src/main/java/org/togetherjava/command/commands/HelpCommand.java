@@ -57,7 +57,8 @@ public class HelpCommand implements TJCommand {
     CommandNode<CommandSource> node = dispatcher.findNode(path);
 
     if (node == null) {
-      source.getMessageSender().sendMessage(CommandMessages.commandNotFound(), source.getChannel());
+      source.getMessageSender()
+          .sendMessage(CommandMessages.commandNotFound(commandName), source.getChannel());
       return 1;
     }
 

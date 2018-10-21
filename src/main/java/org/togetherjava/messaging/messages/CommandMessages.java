@@ -6,8 +6,8 @@ import org.togetherjava.messaging.SimpleMessage;
 
 public class CommandMessages {
 
-  public static SimpleMessage commandNotFound() {
-    return SimpleMessage.error("Command not found");
+  public static SimpleMessage commandNotFound(String path) {
+    return SimpleMessage.error("Command '" + path + "' not found");
   }
 
   public static ComplexMessage commandError(String error) {
