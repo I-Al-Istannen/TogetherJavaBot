@@ -30,7 +30,7 @@ public class TogetherJavaBot {
    * @throws InterruptedException if an error occurs while waiting
    * @throws LoginException if the token is invalid or another error prevents login
    */
-  public void start() throws InterruptedException, LoginException {
+  public void start(String token) throws InterruptedException, LoginException {
     Transformer<ComplexMessage, Message> complexTransformer = new CategoryColorTransformer()
         .then(ComplexMessage::build);
     Transformer<SimpleMessage, Message> simpleTransformer = new EmbedTransformer()
@@ -38,7 +38,7 @@ public class TogetherJavaBot {
         .then(ComplexMessage::build);
 
     jda = new JDABuilder(AccountType.BOT)
-        .setToken(config.getString("login.token"))
+        .setToken(token)
         .addEventListener(
             new CommandListener(
                 config.getString("commands.prefix"),

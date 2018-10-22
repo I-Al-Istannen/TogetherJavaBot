@@ -1,6 +1,3 @@
-[login]
-  token = "your token"
-
 [commands]
   prefix = "!"
 
