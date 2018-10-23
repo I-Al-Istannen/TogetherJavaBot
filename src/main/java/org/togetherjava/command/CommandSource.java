@@ -4,19 +4,20 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.togetherjava.messaging.sending.MessageSender;
+import org.togetherjava.util.Context;
 
 public class CommandSource {
 
   private User user;
   private Message message;
-  private MessageSender messageSender;
   private MessageChannel channel;
+  private Context context;
 
-  public CommandSource(Message message, MessageSender messageSender) {
+  public CommandSource(Message message, Context context) {
     this.user = message.getAuthor();
     this.message = message;
-    this.messageSender = messageSender;
     this.channel = message.getChannel();
+    this.context = context;
   }
 
   public User getUser() {
@@ -31,7 +32,16 @@ public class CommandSource {
     return channel;
   }
 
+  /**
+   * Convenience method for {@link #getContext()#getMessageSender()}
+   *
+   * @return the {@link MessageSender} to use
+   */
   public MessageSender getMessageSender() {
-    return messageSender;
+    return context.getMessageSender();
+  }
+
+  public Context getContext() {
+    return context;
   }
 }

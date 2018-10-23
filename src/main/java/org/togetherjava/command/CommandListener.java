@@ -13,11 +13,19 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.togetherjava.autodiscovery.ClassDiscovery;
 import org.togetherjava.messaging.ComplexMessage;
 import org.togetherjava.messaging.MessageCategory;
 import org.togetherjava.messaging.messages.CommandMessages;
-import org.togetherjava.messaging.sending.MessageSender;
+import org.togetherjava.util.Context;
 
+
+/**
+ * An event listener that reads messages, finds commands in them, parses it and delegates them to
+ * the registered commands..
+ *
+ * <P><strong>You must call {@link #setContext(Context)} before registering this listener.</strong>
+ */
 public class CommandListener extends ListenerAdapter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CommandListener.class);
@@ -26,24 +34,40 @@ public class CommandListener extends ListenerAdapter {
 
   private CommandDispatcher<CommandSource> dispatcher;
   private String prefix;
-  private MessageSender messageSender;
+  private Context context;
 
-  public CommandListener(String prefix, MessageSender messageSender) {
+  public CommandListener(String prefix) {
     this.prefix = prefix;
-    this.messageSender = messageSender;
     this.dispatcher = new CommandDispatcher<>();
     this.commandCache = CacheBuilder.newBuilder()
         .maximumSize(30)
         .build();
 
     RootCommandNode<CommandSource> root = dispatcher.getRoot();
-    CommandDiscovery.findCommands().stream()
+    ClassDiscovery.find(
+        getClass().getClassLoader(),
+        "org.togetherjava.command.commands",
+        TJCommand.class
+    ).stream()
         .map(tjCommand -> tjCommand.getCommand(dispatcher))
         .forEach(root::addChild);
   }
 
+  /**
+   * Sets the {@link Context}. <strong>Must be invoked before this object can be used.</strong>
+   *
+   * @param context the context to use
+   */
+  public void setContext(Context context) {
+    this.context = context;
+  }
+
   @Override
   public void onMessageReceived(MessageReceivedEvent event) {
+    if (context == null) {
+      throw new IllegalStateException("setContext not called!");
+    }
+
     if (event.getAuthor().isBot() || event.getAuthor().equals(event.getJDA().getSelfUser())) {
       return;
     }
@@ -58,7 +82,7 @@ public class CommandListener extends ListenerAdapter {
     command = command.substring(prefix.length())
         .trim();
 
-    CommandSource source = new CommandSource(message, messageSender);
+    CommandSource source = new CommandSource(message, context);
 
     // Redirect to help, but without redirection
     if (command.isEmpty()) {
@@ -103,7 +127,7 @@ public class CommandListener extends ListenerAdapter {
                 true
             );
       }
-      messageSender.sendMessage(complexMessage, source.getChannel());
+      context.getMessageSender().sendMessage(complexMessage, source.getChannel());
     }
   }
 
@@ -112,7 +136,7 @@ public class CommandListener extends ListenerAdapter {
 
     parseResults.getExceptions().values().forEach(Throwable::printStackTrace);
 
-    messageSender.sendMessage(
+    context.getMessageSender().sendMessage(
         CommandMessages.commandNotFound(parseResults.getReader().getString()),
         message.getChannel()
     );

@@ -14,6 +14,8 @@ import org.togetherjava.messaging.sending.DestructingMessageSender;
 import org.togetherjava.messaging.transforming.CategoryColorTransformer;
 import org.togetherjava.messaging.transforming.EmbedTransformer;
 import org.togetherjava.messaging.transforming.Transformer;
+import org.togetherjava.reactions.ReactionListener;
+import org.togetherjava.util.Context;
 
 public class TogetherJavaBot {
 
@@ -37,14 +39,23 @@ public class TogetherJavaBot {
         .then(new CategoryColorTransformer())
         .then(ComplexMessage::build);
 
+    DestructingMessageSender messageSender = new DestructingMessageSender(
+        config,
+        simpleTransformer,
+        complexTransformer
+    );
+    ReactionListener reactionListener = new ReactionListener();
+    CommandListener commandListener = new CommandListener(config.getString("commands.prefix"));
+
+    Context context = new Context(messageSender, reactionListener, commandListener, config);
+
+    commandListener.setContext(context);
+    reactionListener.setContext(context);
+
     jda = new JDABuilder(AccountType.BOT)
         .setToken(token)
-        .addEventListener(
-            new CommandListener(
-                config.getString("commands.prefix"),
-                new DestructingMessageSender(config, simpleTransformer, complexTransformer)
-            )
-        )
+        .addEventListener(commandListener)
+        .addEventListener(reactionListener)
         .build()
         .awaitReady();
   }

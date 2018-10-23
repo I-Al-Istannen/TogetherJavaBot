@@ -1,6 +1,7 @@
-package org.togetherjava.command;
+package org.togetherjava.autodiscovery;
 
 import com.google.common.reflect.ClassPath;
+import com.google.common.reflect.ClassPath.ClassInfo;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
@@ -9,24 +10,27 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CommandDiscovery {
+public class ClassDiscovery {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CommandDiscovery.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ClassDiscovery.class);
 
   /**
-   * Finds all commands and instabtiates them.
+   * Finds all classes of the given type in a package and instantiates them.
    *
-   * @return all found commands
+   * @param loader the {@link ClassLoader} to use
+   * @param packageName the name of the package to look in
+   * @param typeToken the class to search instances for
+   * @return all found class instances
    * @throws RuntimeException if an error occurs while getting the classpath
    */
-  public static List<TJCommand> findCommands() {
+  public static <T> List<T> find(ClassLoader loader, String packageName, Class<T> typeToken) {
     try {
-      return ClassPath.from(CommandDiscovery.class.getClassLoader())
-          .getTopLevelClassesRecursive("org.togetherjava.command.commands")
+      return ClassPath.from(loader)
+          .getTopLevelClassesRecursive(packageName)
           .stream()
           .flatMap(instantiateClasses())
-          .filter(TJCommand.class::isAssignableFrom)
-          .map(aClass -> (Class<TJCommand>) aClass)
+          .filter(typeToken::isAssignableFrom)
+          .map(aClass -> (Class<T>) aClass)
           .flatMap(instantiate())
           .collect(Collectors.toList());
     } catch (IOException e) {
@@ -34,7 +38,7 @@ public class CommandDiscovery {
     }
   }
 
-  private static Function<ClassPath.ClassInfo, Stream<Class<?>>> instantiateClasses() {
+  private static Function<ClassInfo, Stream<Class<?>>> instantiateClasses() {
     return classInfo -> {
       try {
         return Stream.of(Class.forName(classInfo.getName()));
@@ -55,4 +59,5 @@ public class CommandDiscovery {
       }
     };
   }
+
 }
