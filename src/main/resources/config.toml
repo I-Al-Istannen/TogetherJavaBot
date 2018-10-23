@@ -1,6 +1,9 @@
 [commands]
   prefix = "!"
 
+[database]
+  connection-url = "jdbc:sqlite:db.sqlite"
+
 [messages]
   [messages.error]
     self-destruct = true

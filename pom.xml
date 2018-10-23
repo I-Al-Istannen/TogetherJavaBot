@@ -21,6 +21,19 @@
         <version>3.8.0</version>
         <configuration>
           <release>10</release>
+
+          <!--Compile parameter names for jdbi-->
+          <compilerArgs>
+            <arg>-parameters</arg>
+          </compilerArgs>
+
+          <annotationProcessorPaths>
+            <dependency>
+              <groupId>org.immutables</groupId>
+              <artifactId>value</artifactId>
+              <version>2.7.1</version>
+            </dependency>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
 
@@ -38,7 +51,8 @@
             <configuration>
               <transformers>
                 <!-- add Main-Class to manifest file -->
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                <transformer
+                  implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <mainClass>org.togetherjava.ApplicationEntry</mainClass>
                 </transformer>
               </transformers>
@@ -106,6 +120,31 @@
       <version>0.7.2</version>
     </dependency>
 
+    <!--IMMUTABLE DATA CLASSES-->
+    <dependency>
+      <groupId>org.immutables</groupId>
+      <artifactId>value</artifactId>
+      <version>2.7.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!--DATABASE-->
+    <dependency>
+      <groupId>org.jdbi</groupId>
+      <artifactId>jdbi3-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jdbi</groupId>
+      <artifactId>jdbi3-sqlobject</artifactId>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
+    <dependency>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+      <version>3.25.2</version>
+    </dependency>
+
 
     <!--LOGGING-->
     <dependency>
@@ -120,5 +159,20 @@
     </dependency>
 
   </dependencies>
+
+
+  <!--JDBI BOM-->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.jdbi</groupId>
+        <artifactId>jdbi3-bom</artifactId>
+        <type>pom</type>
+        <version>3.3.0</version>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
 
 </project>

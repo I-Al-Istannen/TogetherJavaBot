@@ -15,6 +15,7 @@ import org.togetherjava.messaging.transforming.CategoryColorTransformer;
 import org.togetherjava.messaging.transforming.EmbedTransformer;
 import org.togetherjava.messaging.transforming.Transformer;
 import org.togetherjava.reactions.ReactionListener;
+import org.togetherjava.storage.sql.Database;
 import org.togetherjava.util.Context;
 
 public class TogetherJavaBot {
@@ -46,8 +47,10 @@ public class TogetherJavaBot {
     );
     ReactionListener reactionListener = new ReactionListener();
     CommandListener commandListener = new CommandListener(config.getString("commands.prefix"));
+    Database database = new Database(config.getString("database.connection-url"));
 
-    Context context = new Context(messageSender, reactionListener, commandListener, config);
+    Context context = new Context(messageSender, reactionListener, commandListener, config,
+        database);
 
     commandListener.setContext(context);
     reactionListener.setContext(context);

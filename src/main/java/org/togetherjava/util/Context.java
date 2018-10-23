@@ -4,6 +4,7 @@ import com.moandjiezana.toml.Toml;
 import org.togetherjava.command.CommandListener;
 import org.togetherjava.messaging.sending.MessageSender;
 import org.togetherjava.reactions.ReactionListener;
+import org.togetherjava.storage.sql.Database;
 
 public class Context {
 
@@ -11,13 +12,16 @@ public class Context {
   private ReactionListener reactionListener;
   private CommandListener commandListener;
   private Toml config;
+  private Database database;
 
   public Context(MessageSender messageSender,
-      ReactionListener reactionListener, CommandListener commandListener, Toml config) {
+      ReactionListener reactionListener, CommandListener commandListener, Toml config,
+      Database database) {
     this.messageSender = messageSender;
     this.reactionListener = reactionListener;
     this.commandListener = commandListener;
     this.config = config;
+    this.database = database;
   }
 
   public MessageSender getMessageSender() {
@@ -36,11 +40,7 @@ public class Context {
     return config;
   }
 
-  public void setReactionListener(ReactionListener reactionListener) {
-    this.reactionListener = reactionListener;
-  }
-
-  public void setCommandListener(CommandListener commandListener) {
-    this.commandListener = commandListener;
+  public Database getDatabase() {
+    return database;
   }
 }
