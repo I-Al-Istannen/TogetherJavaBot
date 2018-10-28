@@ -139,6 +139,10 @@ public class TagCommand implements TJCommand {
         .sorted()
         .collect(Collectors.joining(", "));
 
+    if (tags.isEmpty()) {
+      tags = "None :/";
+    }
+
     source.getMessageSender().sendMessage(
         SimpleMessage.success(tags),
         source.getChannel()
