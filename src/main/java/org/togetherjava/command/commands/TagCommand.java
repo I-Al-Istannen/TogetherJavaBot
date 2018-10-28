@@ -140,7 +140,7 @@ public class TagCommand implements TJCommand {
         .collect(Collectors.joining(", "));
 
     if (tags.isEmpty()) {
-      tags = "None :/";
+      tags = "There are no tags configured yet :/";
     }
 
     source.getMessageSender().sendMessage(
