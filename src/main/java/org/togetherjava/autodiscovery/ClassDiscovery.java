@@ -10,9 +10,14 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ClassDiscovery {
+public final class ClassDiscovery {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ClassDiscovery.class);
+
+  private ClassDiscovery() {
+    throw new AssertionError("No instantiation");
+  }
+
 
   /**
    * Finds all classes of the given type in a package and instantiates them.
