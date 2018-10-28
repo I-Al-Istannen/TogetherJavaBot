@@ -4,7 +4,12 @@ import org.togetherjava.messaging.ComplexMessage;
 import org.togetherjava.messaging.MessageCategory;
 import org.togetherjava.messaging.SimpleMessage;
 
-public class CommandMessages {
+public final class CommandMessages {
+
+  private CommandMessages() {
+    throw new AssertionError("No instantiation");
+  }
+
 
   public static SimpleMessage commandNotFound(String path) {
     return SimpleMessage.error("Command '" + path + "' not found");

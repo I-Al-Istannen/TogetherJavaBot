@@ -6,7 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.function.Supplier;
 
-public class IOStreamUtil {
+public final class IOStreamUtil {
+
+  private IOStreamUtil() {
+    throw new AssertionError("No instantiation");
+  }
 
   /**
    * Reads an {@link InputStreamReader} to a {@link String}.
