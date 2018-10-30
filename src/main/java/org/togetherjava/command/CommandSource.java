@@ -1,5 +1,6 @@
 package org.togetherjava.command;
 
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -22,6 +23,15 @@ public class CommandSource {
 
   public User getUser() {
     return user;
+  }
+
+  /**
+   * Returns the {@link #getUser()} as a guild {@link Member}.
+   *
+   * @return the user as a Member
+   */
+  public Member getMember() {
+    return getMessage().getGuild().getMember(getUser());
   }
 
   public Message getMessage() {
