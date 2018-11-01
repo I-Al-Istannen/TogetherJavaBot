@@ -2,6 +2,11 @@ package org.togetherjava;
 
 import com.moandjiezana.toml.Toml;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 import javax.security.auth.login.LoginException;
 import org.slf4j.Logger;
@@ -23,7 +28,12 @@ public class ApplicationEntry {
 
     File configFile = new File(configPath);
     if (!configFile.exists()) {
-      LOGGER.error("Config '{}' does not exist!%n", configFile.getAbsolutePath());
+      LOGGER.error(
+          "Config '{}' does not exist, but I hopefully created it!"
+              + " Check and edit it, if you wish and then restart me.",
+          configFile.getAbsolutePath()
+      );
+      copyDefaultConfig(configFile.toPath());
       System.exit(1);
     }
 
@@ -59,11 +69,21 @@ public class ApplicationEntry {
    */
   private static String fetchConfigPath(String[] args) {
     if (args.length == 0) {
-      LOGGER.info("Looking for a config in the '{}' environment variable...", CONFIG_ENV);
+      LOGGER.info("Looking for a config path in the '{}' environment variable...", CONFIG_ENV);
       return System.getenv(CONFIG_ENV);
     }
 
     LOGGER.info("Treating the first argument as the config path");
     return args[0];
+  }
+
+  private static void copyDefaultConfig(Path configPath) {
+    try (OutputStream outputStream = Files.newOutputStream(configPath);
+        InputStream inputStream = ApplicationEntry.class.getResourceAsStream("/config.toml")) {
+
+      inputStream.transferTo(outputStream);
+    } catch (IOException e) {
+      LOGGER.error("Error writing default config to " + configPath.toAbsolutePath(), e);
+    }
   }
 }
