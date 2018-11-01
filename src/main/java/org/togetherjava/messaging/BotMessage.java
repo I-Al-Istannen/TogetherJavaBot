@@ -1,6 +1,7 @@
 package org.togetherjava.messaging;
 
 import java.time.Duration;
+import org.togetherjava.messaging.transforming.Transformer;
 
 public abstract class BotMessage<T extends BotMessage<T>> {
 
@@ -87,6 +88,17 @@ public abstract class BotMessage<T extends BotMessage<T>> {
     return getSelf();
   }
 
+  /**
+   * Applies the given {@link Transformer} to this message
+   *
+   * @param transformer the transformer to apply
+   * @return this message
+   */
+  public T applyTransformer(Transformer<T, T> transformer) {
+    transformer.transform(getSelf());
+
+    return getSelf();
+  }
 
   /**
    * The category of the message

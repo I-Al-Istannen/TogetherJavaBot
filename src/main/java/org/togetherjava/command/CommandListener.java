@@ -53,6 +53,10 @@ public class CommandListener extends ListenerAdapter {
         .forEach(root::addChild);
   }
 
+  public String getPrefix() {
+    return prefix;
+  }
+
   /**
    * Sets the {@link Context}. <strong>Must be invoked before this object can be used.</strong>
    *

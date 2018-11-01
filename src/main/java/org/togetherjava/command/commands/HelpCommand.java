@@ -7,7 +7,6 @@ import static org.togetherjava.command.CommandGenericHelper.literal;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -17,6 +16,7 @@ import org.togetherjava.command.TJCommand;
 import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.ComplexMessage;
 import org.togetherjava.messaging.messages.CommandMessages;
+import org.togetherjava.messaging.transforming.VerionInfoFooterTransformer;
 
 public class HelpCommand implements TJCommand {
 
@@ -37,15 +37,23 @@ public class HelpCommand implements TJCommand {
 
   private int showAllCommandsHelp(CommandDispatcher<CommandSource> dispatcher,
       CommandSource source) {
-    String usage = dispatcher.getSmartUsage(dispatcher.getRoot(), source).values().stream()
-        .map(s -> "`" + s + "`")
-        .collect(Collectors.joining("\n"));
+
+    String prefix = source.getContext().getCommandListener().getPrefix();
+
+    ComplexMessage complexMessage = new ComplexMessage(MessageCategory.ERROR)
+        .editEmbed(it -> it.setTitle("Available commands:"))
+        .applyTransformer(new VerionInfoFooterTransformer())
+        .notSelfDestructing();
+
+    for (String smartUsage : dispatcher.getSmartUsage(dispatcher.getRoot(), source).values()) {
+      String usage = prefix + smartUsage.replace("|", " | ");
+      complexMessage.editEmbed(it ->
+          it.addField(usage, "", false)
+      );
+    }
 
     source.getMessageSender().sendMessage(
-        new ComplexMessage(MessageCategory.ERROR)
-            .editEmbed(it -> it.setTitle("Available commands:"))
-            .editEmbed(it -> it.setDescription(usage))
-            .notSelfDestructing(),
+        complexMessage,
         source.getChannel()
     );
 

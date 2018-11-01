@@ -64,7 +64,48 @@
           <finalName>TogetherJavaBot</finalName>
         </configuration>
       </plugin>
+
+      <!--COMMIT INFO IN THE BOT-->
+      <plugin>
+        <groupId>pl.project13.maven</groupId>
+        <artifactId>git-commit-id-plugin</artifactId>
+        <version>2.2.5</version>
+        <executions>
+          <execution>
+            <id>get-the-git-infos</id>
+            <goals>
+              <goal>revision</goal>
+            </goals>
+            <phase>initialize</phase>
+          </execution>
+        </executions>
+
+        <configuration>
+          <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+
+          <verbose>false</verbose>
+
+          <useNativeGit>false</useNativeGit>
+          <abbrevLength>12</abbrevLength>
+          <commitIdGenerationMode>flat</commitIdGenerationMode>
+          <dateFormat>yyyy-MM-dd @ HH:mm:ss z</dateFormat>
+        </configuration>
+      </plugin>
+
     </plugins>
+
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*.properties</include>
+          <include>**/*.toml</include>
+          <include>**/*.xml</include>
+          <include>db/**</include>
+        </includes>
+      </resource>
+    </resources>
   </build>
 
   <repositories>
