@@ -199,4 +199,7 @@ nbdist/
 
 # End of https://www.gitignore.io/api/java,maven,eclipse,netbeans,intellij+all
 
+# Edited config
 /realized.toml
+# Created databases
+*.sqlite
