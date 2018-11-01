@@ -117,7 +117,8 @@ public class TagCommand implements TJCommand {
         new ComplexMessage(MessageCategory.INFORMATION)
             .editEmbed(it -> it.addField("Keyword", tag.keyword(), true))
             .editEmbed(it -> it.addField("Description", tag.description(), true))
-            .editEmbed(it -> it.addField("Value", tag.value(), false)),
+            .editEmbed(it -> it.addField("Value", tag.value(), false))
+            .notSelfDestructing(),
         source.getChannel()
     );
 

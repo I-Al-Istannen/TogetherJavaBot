@@ -44,7 +44,8 @@ public class HelpCommand implements TJCommand {
     source.getMessageSender().sendMessage(
         new ComplexMessage(MessageCategory.ERROR)
             .editEmbed(it -> it.setTitle("Available commands:"))
-            .editEmbed(it -> it.setDescription(usage)),
+            .editEmbed(it -> it.setDescription(usage))
+            .notSelfDestructing(),
         source.getChannel()
     );
 
