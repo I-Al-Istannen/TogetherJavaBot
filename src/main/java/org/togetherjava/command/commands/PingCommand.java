@@ -9,7 +9,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.togetherjava.command.CommandGenericHelper;
 import org.togetherjava.command.CommandSource;
 import org.togetherjava.command.TJCommand;
-import org.togetherjava.messaging.MessageCategory;
+import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.SimpleMessage;
 
 public class PingCommand implements TJCommand {

@@ -1,37 +1,64 @@
 package org.togetherjava.messaging.sending;
 
 import com.moandjiezana.toml.Toml;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import org.togetherjava.messaging.ComplexMessage;
-import org.togetherjava.messaging.MessageCategory;
-import org.togetherjava.messaging.SimpleMessage;
+import org.togetherjava.messaging.BotMessage;
+import org.togetherjava.messaging.BotMessage.DestructionState;
+import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.transforming.Transformer;
 
-public class DestructingMessageSender extends TransformingMessageSender {
+public class DestructingMessageSender implements MessageSender {
 
   private Toml toml;
+  private final Transformer<BotMessage, Message> messageTransformer;
 
-  public DestructingMessageSender(Toml toml,
-      Transformer<SimpleMessage, Message> simpleMessageTransformer,
-      Transformer<ComplexMessage, Message> complexMessageTransformer) {
-
-    super(simpleMessageTransformer, complexMessageTransformer);
-
+  public DestructingMessageSender(Toml toml, Transformer<BotMessage, Message> messageTransformer) {
     this.toml = toml;
+    this.messageTransformer = messageTransformer;
   }
 
   @Override
-  public void sendMessage(Message message, MessageCategory category, MessageChannel channel) {
-    if (toml.getBoolean("messages." + category.name().toLowerCase() + ".self-destruct")) {
-      Long delay = toml
-          .getLong("messages." + category.name().toLowerCase() + ".destruction-delay");
+  public void sendMessage(BotMessage message, MessageChannel channel) {
+    Message discordMessage = messageTransformer.transform(message);
 
-      channel.sendMessage(message)
-          .queue(sentMessage -> sentMessage.delete().queueAfter(delay, TimeUnit.SECONDS));
-    } else {
-      channel.sendMessage(message).submit();
+    channel.sendMessage(discordMessage).queue(destructingConsumer(message));
+  }
+
+  private Consumer<Message> destructingConsumer(BotMessage botMessage) {
+    return sentMessage -> {
+      if (botMessage.getSelfDestructingState() == DestructionState.NOT_DESTRUCTING) {
+        return;
+      }
+
+      Duration destructionDelay;
+      if (botMessage.getSelfDestructingState() == DestructionState.SELF_DESTRUCTING) {
+        destructionDelay = botMessage.getSelfDestructDelay();
+      } else {
+        destructionDelay = defaultDestructionDelay(botMessage.getCategory());
+      }
+
+      if (destructionDelay != null) {
+        deleteAfter(sentMessage, destructionDelay);
+      }
+    };
+  }
+
+  private Duration defaultDestructionDelay(MessageCategory category) {
+    if (!toml.getBoolean("messages." + category.name().toLowerCase() + ".self-destruct")) {
+      return null;
     }
+
+    Long delay = toml
+        .getLong("messages." + category.name().toLowerCase() + ".destruction-delay");
+
+    return Duration.ofSeconds(delay);
+  }
+
+  private void deleteAfter(Message message, Duration duration) {
+    message.delete().queueAfter(duration.getSeconds(), TimeUnit.SECONDS);
   }
 }

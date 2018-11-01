@@ -1,7 +1,7 @@
 package org.togetherjava.messaging.messages;
 
+import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.ComplexMessage;
-import org.togetherjava.messaging.MessageCategory;
 import org.togetherjava.messaging.SimpleMessage;
 
 public final class CommandMessages {

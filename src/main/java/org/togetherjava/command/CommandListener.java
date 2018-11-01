@@ -14,8 +14,8 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.togetherjava.autodiscovery.ClassDiscovery;
+import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.ComplexMessage;
-import org.togetherjava.messaging.MessageCategory;
 import org.togetherjava.messaging.messages.CommandMessages;
 import org.togetherjava.util.Context;
 

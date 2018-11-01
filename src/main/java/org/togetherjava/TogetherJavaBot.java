@@ -8,6 +8,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.Message;
 import org.togetherjava.command.CommandListener;
+import org.togetherjava.messaging.BotMessage;
 import org.togetherjava.messaging.ComplexMessage;
 import org.togetherjava.messaging.SimpleMessage;
 import org.togetherjava.messaging.sending.DestructingMessageSender;
@@ -34,17 +35,22 @@ public class TogetherJavaBot {
    * @throws LoginException if the token is invalid or another error prevents login
    */
   public void start(String token) throws InterruptedException, LoginException {
-    Transformer<ComplexMessage, Message> complexTransformer = new CategoryColorTransformer()
-        .then(ComplexMessage::build);
-    Transformer<SimpleMessage, Message> simpleTransformer = new EmbedTransformer()
+    Transformer<BotMessage, ComplexMessage> toComplexMessage = Transformer.typeSwitch(
+        SimpleMessage.class,
+        ComplexMessage.class,
+        new EmbedTransformer(),
+        it -> it
+    );
+
+    Transformer<BotMessage, Message> transformer = toComplexMessage
         .then(new CategoryColorTransformer())
-        .then(ComplexMessage::build);
+        .then(ComplexMessage::toDiscordMessage);
 
     DestructingMessageSender messageSender = new DestructingMessageSender(
         config,
-        simpleTransformer,
-        complexTransformer
+        transformer
     );
+
     ReactionListener reactionListener = new ReactionListener();
     CommandListener commandListener = new CommandListener(config.getString("commands.prefix"));
     Database database = new Database(config.getString("database.connection-url"));

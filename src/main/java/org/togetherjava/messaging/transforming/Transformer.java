@@ -21,4 +21,34 @@ public interface Transformer<T, R> {
   default <S> Transformer<T, S> then(Transformer<R, S> next) {
     return inputT -> next.transform(transform(inputT));
   }
+
+  /**
+   * Returns a transformer that splits the chain based on the type. Does not accept nulls.
+   *
+   * @param first the class of the first branch
+   * @param second the class of the second branch
+   * @param firstTransformer the transformer for the first branch
+   * @param secondTransformer the transformer for the second branch
+   * @param <T> the original type
+   * @param <T1> the type of the first branch
+   * @param <T2> the type of the second branch
+   * @param <R> the return type
+   * @return a {@link Transformer} from T to R that chooses the appropriate branch
+   */
+  static <T, T1 extends T, T2 extends T, R> Transformer<T, R> typeSwitch(
+      Class<T1> first, Class<T2> second,
+      Transformer<T1, R> firstTransformer, Transformer<T2, R> secondTransformer) {
+
+    return t -> {
+      if (first.isInstance(t)) {
+        return firstTransformer.transform(first.cast(t));
+      } else if (second.isInstance(t)) {
+        return secondTransformer.transform(second.cast(t));
+      } else if (t == null) {
+        throw new NullPointerException("t is null");
+      } else {
+        throw new IllegalArgumentException("Unknown type: " + t.getClass().getName());
+      }
+    };
+  }
 }

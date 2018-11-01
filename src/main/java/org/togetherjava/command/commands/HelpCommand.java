@@ -7,14 +7,15 @@ import static org.togetherjava.command.CommandGenericHelper.literal;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.togetherjava.command.CommandSource;
 import org.togetherjava.command.TJCommand;
+import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.ComplexMessage;
-import org.togetherjava.messaging.MessageCategory;
 import org.togetherjava.messaging.messages.CommandMessages;
 
 public class HelpCommand implements TJCommand {

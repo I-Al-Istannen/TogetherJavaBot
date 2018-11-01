@@ -5,16 +5,20 @@ import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 
-public class ComplexMessage {
+public class ComplexMessage extends BotMessage<ComplexMessage> {
 
   private EmbedBuilder embedBuilder;
   private MessageBuilder messageBuilder;
-  private MessageCategory category;
 
   public ComplexMessage(MessageCategory category) {
-    this.category = category;
+    super(category);
     this.embedBuilder = new EmbedBuilder();
     this.messageBuilder = new MessageBuilder();
+  }
+
+  @Override
+  protected ComplexMessage getSelf() {
+    return this;
   }
 
   /**
@@ -58,19 +62,11 @@ public class ComplexMessage {
   }
 
   /**
-   * Sets the category for this message.
+   * Builds this Message as a discord {@link Message}.
    *
-   * @param category the {@link MessageCategory}
+   * @return the created discord message
    */
-  public void setCategory(MessageCategory category) {
-    this.category = category;
-  }
-
-  public MessageCategory getCategory() {
-    return category;
-  }
-
-  public Message build() {
+  public Message toDiscordMessage() {
     if (embedBuilder.isEmpty()) {
       return messageBuilder.build();
     }

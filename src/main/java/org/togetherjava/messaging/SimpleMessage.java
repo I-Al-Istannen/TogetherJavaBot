@@ -1,40 +1,55 @@
 package org.togetherjava.messaging;
 
-public class SimpleMessage {
+public class SimpleMessage extends BotMessage<SimpleMessage> {
 
   private String content;
-  private MessageCategory category;
 
   public SimpleMessage(MessageCategory category, String content) {
+    super(category);
     this.content = content;
-    this.category = category;
   }
 
+  /**
+   * Returns the content of this message.
+   *
+   * @return the message content, i.e. the text that should be displayed
+   */
   public String getContent() {
     return content;
   }
 
-  public MessageCategory getCategory() {
-    return category;
+  @Override
+  protected SimpleMessage getSelf() {
+    return this;
   }
 
+  /**
+   * Creates an error message with the given text.
+   *
+   * @param message the message to display
+   * @return the created message
+   */
   public static SimpleMessage error(String message) {
     return new SimpleMessage(MessageCategory.ERROR, message);
   }
 
+  /**
+   * Creates an information message with the given text.
+   *
+   * @param message the message to display
+   * @return the created message
+   */
   public static SimpleMessage information(String message) {
     return new SimpleMessage(MessageCategory.INFORMATION, message);
   }
 
+  /**
+   * Creates a success message with the given text.
+   *
+   * @param message the message to display
+   * @return the created message
+   */
   public static SimpleMessage success(String message) {
     return new SimpleMessage(MessageCategory.SUCCESS, message);
-  }
-
-  @Override
-  public String toString() {
-    return "SimpleMessage{" +
-        "content='" + content + '\'' +
-        ", category=" + category +
-        '}';
   }
 }
