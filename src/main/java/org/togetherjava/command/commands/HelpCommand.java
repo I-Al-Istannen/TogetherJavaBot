@@ -68,24 +68,19 @@ public class HelpCommand implements TJCommand {
 
     Collection<String> smartUsages = dispatcher.getSmartUsage(node, source).values();
     if (!smartUsages.isEmpty()) {
-      content += "**Arguments:**" + smartUsages.stream()
-          .map(s -> "`" + s + "`")
-          .collect(Collectors.joining(" || ", "\n", ""));
+      content += "**Usage:**" + smartUsages.stream()
+          .map(s -> "`" + commandName + " " + s + "`")
+          .collect(Collectors.joining("\n", "\n", ""));
     }
 
     content += "\n\n**Usage text:**\n" + node.getUsageText();
-
-    if (!node.getExamples().isEmpty()) {
-      content += "\n\n**Examples:**\n" + node.getExamples().stream()
-          .map(s -> "`" + s + "`")
-          .collect(Collectors.joining("\n"));
-    }
 
     final String finalContent = content;
 
     ComplexMessage complexMessage = new ComplexMessage(MessageCategory.SUCCESS)
         .editEmbed(it -> it.setTitle("Help for " + commandName))
-        .editEmbed(it -> it.setDescription(finalContent));
+        .editEmbed(it -> it.setDescription(finalContent))
+        .notSelfDestructing();
 
     source.getMessageSender().sendMessage(
         complexMessage,
