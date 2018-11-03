@@ -14,8 +14,10 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.togetherjava.autodiscovery.ClassDiscovery;
+import org.togetherjava.command.exceptions.CommandException;
 import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.ComplexMessage;
+import org.togetherjava.messaging.SimpleMessage;
 import org.togetherjava.messaging.messages.CommandMessages;
 import org.togetherjava.util.Context;
 
@@ -132,6 +134,11 @@ public class CommandListener extends ListenerAdapter {
             );
       }
       context.getMessageSender().sendMessage(complexMessage, source.getChannel());
+    } catch (CommandException e) {
+      context.getMessageSender().sendMessage(
+          SimpleMessage.error(e.getMessage()),
+          source.getChannel()
+      );
     }
   }
 

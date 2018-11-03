@@ -42,8 +42,7 @@ public class HelpCommand implements TJCommand {
 
     ComplexMessage complexMessage = new ComplexMessage(MessageCategory.ERROR)
         .editEmbed(it -> it.setTitle("Available commands:"))
-        .applyTransformer(new VerionInfoFooterTransformer())
-        .notSelfDestructing();
+        .applyTransformer(new VerionInfoFooterTransformer());
 
     for (String smartUsage : dispatcher.getSmartUsage(dispatcher.getRoot(), source).values()) {
       String usage = prefix + smartUsage.replace("|", " | ");
@@ -87,8 +86,7 @@ public class HelpCommand implements TJCommand {
 
     ComplexMessage complexMessage = new ComplexMessage(MessageCategory.SUCCESS)
         .editEmbed(it -> it.setTitle("Help for " + commandName))
-        .editEmbed(it -> it.setDescription(finalContent))
-        .notSelfDestructing();
+        .editEmbed(it -> it.setDescription(finalContent));
 
     source.getMessageSender().sendMessage(
         complexMessage,

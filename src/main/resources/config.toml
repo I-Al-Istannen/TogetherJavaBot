@@ -1,5 +1,14 @@
 [commands]
+  # The command prefix, that each command must start with
   prefix = "!"
+
+  # Configuration for the Tag command
+  [commands.tag]
+
+    [commands.tag.modify]
+      # A list with roles whose users are allowed to modify tags.
+      allowed-roles= [  ]
+
 
 [database]
   connection-url = "jdbc:sqlite:db.sqlite"
