@@ -1,5 +1,6 @@
 package org.togetherjava.command.commands.tag;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.getString;
 import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static com.mojang.brigadier.arguments.StringArgumentType.word;
@@ -32,45 +33,62 @@ class ModificationCommands {
    */
   static void addCommands(LiteralArgumentBuilder<CommandSource> parent) {
     parent.then(
-        literal("add").then(
-            argument("keyword", word()).then(
-                argument("quoted description", string()).then(
-                    argument("value", greedyString()).executes(
-                        context ->
-                            addTag(
-                                context.getSource(),
-                                context.getArgument("keyword", String.class),
-                                context.getArgument("quoted description",
-                                    String.class),
-                                context.getArgument("value", String.class)
-                            )
+        literal("add")
+            .shortDescription("Creates a new tag.")
+            .longDescription("Adds a new tag with the given keyword, tag and"
+                + " description. The description has to be in quotes, so the bot is"
+                + " able to discern it from the actual tag value. The tag has to be"
+                + " unique."
+            )
+            .then(
+                argument("keyword", word()).then(
+                    argument("quoted description", string()).then(
+                        argument("value", greedyString()).executes(
+                            context ->
+                                addTag(
+                                    context.getSource(),
+                                    getString(context, "keyword"),
+                                    getString(context, "quoted description"),
+                                    getString(context, "value")
+                                )
+                        )
                     )
                 )
             )
-        )
     ).then(
-        literal("delete").then(
-            argument("tag keyword", word()).executes(
-                context ->
-                    deleteTag(
-                        context.getSource(),
-                        context.getArgument("tag keyword", String.class)
-                    )
-            )
-        )
-    ).then(
-        literal("edit").then(
-            argument("tag keyword", word()).then(
-                argument("new value", greedyString()).executes(
+        literal("delete")
+            .shortDescription("Deletes a tag.")
+            .then(
+                argument("tag keyword", word()).executes(
                     context ->
-                        editTag(
+                        deleteTag(
                             context.getSource(),
-                            context.getArgument("tag keyword", String.class),
-                            context.getArgument("new value", String.class)
+                            getString(context, "tag keyword")
                         )
                 )
             )
-        )
+    ).then(
+        literal("edit")
+            .shortDescription("Edits a tag.")
+            .longDescription(
+                "Edits a given tag. You need to supply it with the tag keyword,"
+                    + " the new description in quotes and the new value"
+            )
+            .then(
+                argument("tag keyword", word()).then(
+                    argument("new description", string()).then(
+                        argument("new value", greedyString()).executes(
+                            context ->
+                                editTag(
+                                    context.getSource(),
+                                    getString(context, "tag keyword"),
+                                    getString(context, "new description"),
+                                    getString(context, "new value")
+                                )
+                        )
+                    )
+                )
+            )
     );
   }
 
@@ -113,7 +131,7 @@ class ModificationCommands {
     return 0;
   }
 
-  private static int editTag(CommandSource source, String keyword, String value) {
+  private static int editTag(CommandSource source, String keyword, String desc, String value) {
     assertCanModify(source.getMember(), source.getContext().getConfig());
 
     TagDao tagDao = source.getContext().getDatabase().getTagDao();
@@ -126,6 +144,7 @@ class ModificationCommands {
     tagDao.editTag(
         ImmutableMessageTag.copyOf(tagOptional.get())
             .withValue(value)
+            .withDescription(desc)
             .withCreator(source.getUser().getIdLong())
     );
 

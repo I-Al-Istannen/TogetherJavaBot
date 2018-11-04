@@ -1,12 +1,11 @@
 package org.togetherjava.command.commands;
 
+import static org.togetherjava.command.CommandGenericHelper.literal;
+
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import org.togetherjava.command.CommandGenericHelper;
 import org.togetherjava.command.CommandSource;
 import org.togetherjava.command.TJCommand;
 import org.togetherjava.messaging.BotMessage.MessageCategory;
@@ -16,46 +15,39 @@ public class PingCommand implements TJCommand {
 
   @Override
   public LiteralCommandNode<CommandSource> getCommand(CommandDispatcher<CommandSource> dispatcher) {
-    return CommandGenericHelper.literal("ping")
+    return literal("ping")
+        .shortDescription("Pongs! you, if the bot is online.")
         .then(
-            CommandGenericHelper.literal("error")
+            literal("error")
+                .shortDescription("Displays a pong with the 'error' category.")
                 .executes(sendMessage(MessageCategory.ERROR))
         )
         .then(
-            CommandGenericHelper.literal("information")
+            literal("information")
+                .shortDescription("Displays a pong with the 'information' category.")
                 .executes(sendMessage(MessageCategory.INFORMATION))
         )
         .then(
-            CommandGenericHelper.literal("success")
+            literal("success")
+                .shortDescription("Displays a pong with the 'success' category.")
                 .executes(sendMessage(MessageCategory.SUCCESS))
         )
         .then(
-            CommandGenericHelper.literal("none")
+            literal("none")
+                .shortDescription("Displays a pong with the 'none' category.")
                 .executes(sendMessage(MessageCategory.NONE))
-        )
-        .then(
-            RequiredArgumentBuilder.<CommandSource, Integer>argument("number",
-                IntegerArgumentType.integer())
-                .executes(context ->
-                    sendMessage(
-                        MessageCategory.SUCCESS,
-                        context,
-                        "Pong " + context.getArgument("number", Integer.class) + "!"
-                    )
-                )
         )
         .build();
   }
 
   private static Command<CommandSource> sendMessage(MessageCategory category) {
-    return context -> sendMessage(category, context, "Pong!");
+    return context -> sendMessage(category, context);
   }
 
-  private static int sendMessage(MessageCategory category, CommandContext<CommandSource> context,
-      String text) {
+  private static int sendMessage(MessageCategory category, CommandContext<CommandSource> context) {
     CommandSource source = context.getSource();
     source.getMessageSender()
-        .sendMessage(new SimpleMessage(category, text), source.getChannel());
+        .sendMessage(new SimpleMessage(category, "Pong!"), source.getChannel());
     return 0;
   }
 }

@@ -17,8 +17,15 @@ public class FetchIdCommand implements TJCommand {
   @Override
   public LiteralCommandNode<CommandSource> getCommand(CommandDispatcher<CommandSource> dispatcher) {
     return literal("fetchId")
+        .shortDescription("Retrieves ids for roles and channels.")
+        .longDescription(
+            "Discord internally uses unique ids (called Snowflakes) for identifying channels and"
+                + " roles, even if they are renamed. This command allows you to easily "
+                + "retrieve them."
+        )
         .then(
             literal("role")
+                .shortDescription("Returns the id of a role with a given name.")
                 .then(
                     argument("name", greedyString())
                         .executes(context -> showRoleId(
@@ -29,6 +36,7 @@ public class FetchIdCommand implements TJCommand {
         )
         .then(
             literal("channel")
+                .shortDescription("Returns the id of a channel with a given name.")
                 .then(
                     argument("name", greedyString())
                         .executes(context -> showChannelId(

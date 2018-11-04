@@ -121,6 +121,11 @@
       <url>https://libraries.minecraft.net</url>
     </repository>
 
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+
   </repositories>
 
   <dependencies>
@@ -148,11 +153,10 @@
 
     <!--COMMAND PARSER-->
     <dependency>
-      <groupId>com.mojang</groupId>
+      <groupId>com.github.I-Al-Istannen</groupId>
       <artifactId>brigadier</artifactId>
-      <version>1.0.15</version>
+      <version>6f8647dec4</version>
     </dependency>
-
 
     <!--CONFIG LANGUAGE-->
     <dependency>

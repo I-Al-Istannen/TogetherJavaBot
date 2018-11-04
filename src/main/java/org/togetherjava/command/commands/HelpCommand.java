@@ -8,24 +8,26 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 import org.togetherjava.command.CommandSource;
 import org.togetherjava.command.TJCommand;
 import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.ComplexMessage;
 import org.togetherjava.messaging.messages.CommandMessages;
 import org.togetherjava.messaging.transforming.VerionInfoFooterTransformer;
+import org.togetherjava.util.StringUtils;
 
 public class HelpCommand implements TJCommand {
 
   @Override
   public LiteralCommandNode<CommandSource> getCommand(CommandDispatcher<CommandSource> dispatcher) {
     return literal("help")
+        .shortDescription("Shows this help page or help for a single command.")
         .executes(context -> showAllCommandsHelp(dispatcher, context.getSource()))
         .then(
             argument("name", greedyString())
+                .shortDescription("Shows a help page for the given command.")
                 .executes(context -> showOneCommandHelp(
                     dispatcher,
                     context.getSource(),
@@ -41,13 +43,14 @@ public class HelpCommand implements TJCommand {
     String prefix = source.getContext().getCommandListener().getPrefix();
 
     ComplexMessage complexMessage = new ComplexMessage(MessageCategory.ERROR)
+        .notSelfDestructing()
         .editEmbed(it -> it.setTitle("Available commands:"))
         .applyTransformer(new VerionInfoFooterTransformer());
 
-    for (String smartUsage : dispatcher.getSmartUsage(dispatcher.getRoot(), source).values()) {
-      String usage = prefix + smartUsage.replace("|", " | ");
+    for (var usageEntry : dispatcher.getSmartUsage(dispatcher.getRoot(), source).entrySet()) {
+      String usage = prefix + usageEntry.getValue().replace("|", " | ");
       complexMessage.editEmbed(it ->
-          it.addField(usage, "", false)
+          it.addField(usage, usageEntry.getKey().getShortDescription(), false)
       );
     }
 
@@ -71,22 +74,31 @@ public class HelpCommand implements TJCommand {
       return 1;
     }
 
-    String content = "";
+    ComplexMessage complexMessage = new ComplexMessage(MessageCategory.SUCCESS)
+        .notSelfDestructing();
 
-    Collection<String> smartUsages = dispatcher.getSmartUsage(node, source).values();
+    complexMessage.editEmbed(eb -> eb.setDescription(
+        "__**Help for " + commandName + "**:__\n\n" + StringUtils.ZERO_WIDTH_SPACE
+    ));
+
+    Map<CommandNode<CommandSource>, String> smartUsages = dispatcher.getSmartUsage(node, source);
     if (!smartUsages.isEmpty()) {
-      content += "**Usage:**" + smartUsages.stream()
-          .map(s -> "`" + commandName + " " + s + "`")
-          .collect(Collectors.joining("\n", "\n", ""));
+      for (var entry : smartUsages.entrySet()) {
+        complexMessage.editEmbed(eb -> eb.addField(
+            commandName + " " + entry.getValue(),
+            entry.getKey().getShortDescription(),
+            false
+        ));
+      }
     }
 
-    content += "\n\n**Usage text:**\n" + node.getUsageText();
+    if (!node.getLongDescription().isEmpty() || !node.getShortDescription().isEmpty()) {
+      String description = node.getLongDescription().isEmpty()
+          ? node.getShortDescription()
+          : node.getLongDescription();
 
-    final String finalContent = content;
-
-    ComplexMessage complexMessage = new ComplexMessage(MessageCategory.SUCCESS)
-        .editEmbed(it -> it.setTitle("Help for " + commandName))
-        .editEmbed(it -> it.setDescription(finalContent));
+      complexMessage.editEmbed(eb -> eb.addField("Description", description, false));
+    }
 
     source.getMessageSender().sendMessage(
         complexMessage,

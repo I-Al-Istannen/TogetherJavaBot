@@ -123,12 +123,12 @@ public class CommandListener extends ListenerAdapter {
       ComplexMessage complexMessage = new ComplexMessage(MessageCategory.ERROR);
       EmbedBuilder embedBuilder = complexMessage.getEmbedBuilder();
 
-      for (var entry : parseResults.getContext().getNodes().entrySet()) {
+      for (var parseResult : parseResults.getContext().getNodes()) {
         var childrenUsage = String
-            .join(" || ", dispatcher.getSmartUsage(entry.getKey(), source).values());
+            .join(" || ", dispatcher.getSmartUsage(parseResult.getNode(), source).values());
         embedBuilder
             .addField(
-                "Arguments for '" + entry.getKey().getName() + "'",
+                "Arguments for '" + parseResult.getNode().getName() + "'",
                 childrenUsage,
                 true
             );

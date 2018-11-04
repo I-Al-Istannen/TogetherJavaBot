@@ -52,3 +52,8 @@ PRs are welcome too :)
    }
    ```
 5. For more infomation on adding commands, refer to the documentation for Brigardier or ask :)
+
+
+## TODO
+* Role assignment via reactions
+* Rep? Maybe give/remove via a given emoji?

@@ -26,19 +26,20 @@ class DisplayCommands {
   static void addCommands(LiteralArgumentBuilder<CommandSource> parent) {
     parent.then(
         argument("keyword", word()).executes(
-            context ->
-                displayTag(context.getSource(), getString(context, "keyword"))
-        )
+            context -> displayTag(context.getSource(), getString(context, "keyword"))
+        ).shortDescription("Displays a given tag.")
     ).then(
-        literal("info").then(
-            argument("keyword", word()).executes(
-                context -> displayTagInfo(context.getSource(), getString(context, "keyword"))
+        literal("info")
+            .shortDescription("Shows information about a tag.")
+            .then(
+                argument("keyword", word()).executes(
+                    context -> displayTagInfo(context.getSource(), getString(context, "keyword"))
+                )
             )
-        )
     ).then(
-        literal("list").executes(
-            context -> listTags(context.getSource())
-        )
+        literal("list")
+            .shortDescription("Lists all known tags.")
+            .executes(context -> listTags(context.getSource()))
     );
   }
 
