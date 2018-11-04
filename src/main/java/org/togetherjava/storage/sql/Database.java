@@ -2,6 +2,7 @@ package org.togetherjava.storage.sql;
 
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
+import org.sqlite.SQLiteDataSource;
 import org.togetherjava.storage.dao.TagDao;
 import org.togetherjava.util.IOStreamUtil;
 
@@ -10,7 +11,11 @@ public class Database {
   private Jdbi jdbi;
 
   public Database(String jdbcUrl) {
-    this.jdbi = Jdbi.create(jdbcUrl).installPlugin(new SqlObjectPlugin());
+    SQLiteDataSource dataSource = new SQLiteDataSource();
+    dataSource.setUrl(jdbcUrl);
+    dataSource.setEnforceForeignKeys(true);
+
+    this.jdbi = Jdbi.create(dataSource).installPlugin(new SqlObjectPlugin());
 
     jdbi.useHandle(handle ->
         handle.createScript(
