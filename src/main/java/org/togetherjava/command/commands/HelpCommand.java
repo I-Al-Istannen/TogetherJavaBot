@@ -37,7 +37,7 @@ public class HelpCommand implements TJCommand {
         .build();
   }
 
-  private int showAllCommandsHelp(CommandDispatcher<CommandSource> dispatcher,
+  private static int showAllCommandsHelp(CommandDispatcher<CommandSource> dispatcher,
       CommandSource source) {
 
     String prefix = source.getContext().getCommandListener().getPrefix();
@@ -62,12 +62,18 @@ public class HelpCommand implements TJCommand {
     return 0;
   }
 
-  private int showOneCommandHelp(CommandDispatcher<CommandSource> dispatcher, CommandSource source,
+  private static int showOneCommandHelp(CommandDispatcher<CommandSource> dispatcher,
+      CommandSource source,
       String commandName) {
 
     List<String> path = Arrays.asList(commandName.split(CommandDispatcher.ARGUMENT_SEPARATOR));
     CommandNode<CommandSource> node = dispatcher.findNode(path);
 
+    return showOneCommandHelp(dispatcher, source, commandName, node);
+  }
+
+  public static int showOneCommandHelp(CommandDispatcher<CommandSource> dispatcher,
+      CommandSource source, String commandName, CommandNode<CommandSource> node) {
     if (node == null) {
       source.getMessageSender()
           .sendMessage(CommandMessages.commandNotFound(commandName), source.getChannel());

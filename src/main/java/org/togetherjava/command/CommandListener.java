@@ -4,19 +4,19 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
+import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.RootCommandNode;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
-import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.togetherjava.autodiscovery.ClassDiscovery;
+import org.togetherjava.command.commands.HelpCommand;
 import org.togetherjava.command.exceptions.CommandException;
-import org.togetherjava.messaging.BotMessage.MessageCategory;
-import org.togetherjava.messaging.ComplexMessage;
 import org.togetherjava.messaging.SimpleMessage;
 import org.togetherjava.messaging.messages.CommandMessages;
 import org.togetherjava.util.Context;
@@ -85,9 +85,12 @@ public class CommandListener extends ListenerAdapter {
       return;
     }
 
-    command = command.substring(prefix.length())
-        .trim();
+    command = command.substring(prefix.length()).trim();
 
+    executeCommand(message, command);
+  }
+
+  private void executeCommand(Message message, String command) {
     CommandSource source = new CommandSource(message, context);
 
     // Redirect to help, but without redirection
@@ -120,20 +123,15 @@ public class CommandListener extends ListenerAdapter {
     try {
       dispatcher.execute(parseResults);
     } catch (CommandSyntaxException e) {
-      ComplexMessage complexMessage = new ComplexMessage(MessageCategory.ERROR);
-      EmbedBuilder embedBuilder = complexMessage.getEmbedBuilder();
+      List<ParsedCommandNode<CommandSource>> nodes = parseResults.getContext().getNodes();
+      ParsedCommandNode<CommandSource> lastNode = nodes.get(nodes.size() - 1);
 
-      for (var parseResult : parseResults.getContext().getNodes()) {
-        var childrenUsage = String
-            .join(" || ", dispatcher.getSmartUsage(parseResult.getNode(), source).values());
-        embedBuilder
-            .addField(
-                "Arguments for '" + parseResult.getNode().getName() + "'",
-                childrenUsage,
-                true
-            );
-      }
-      context.getMessageSender().sendMessage(complexMessage, source.getChannel());
+      HelpCommand.showOneCommandHelp(
+          dispatcher,
+          source,
+          lastNode.getNode().getName(),
+          lastNode.getNode()
+      );
     } catch (CommandException e) {
       context.getMessageSender().sendMessage(
           SimpleMessage.error(e.getMessage()),
