@@ -5,6 +5,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.word;
 import static org.togetherjava.command.CommandGenericHelper.argument;
 import static org.togetherjava.command.CommandGenericHelper.literal;
 import static org.togetherjava.command.commands.tag.TagCommand.sendTagAlreadyExists;
+import static org.togetherjava.command.commands.tag.TagCommand.sendTagNotFound;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import java.util.Optional;
@@ -67,17 +68,26 @@ class DisplayCommands {
 
     Optional<MessageTag> tagOptional = tagDao.getByKeyword(keyword);
     if (!tagOptional.isPresent()) {
-      return sendTagAlreadyExists(source, keyword);
+      return sendTagNotFound(source, keyword);
     }
 
     MessageTag tag = tagOptional.get();
 
+    ComplexMessage message = new ComplexMessage(MessageCategory.INFORMATION)
+        .editEmbed(it -> it.addField("Keyword", tag.keyword(), true))
+        .editEmbed(it -> it.addField("Description", tag.description(), true))
+        .notSelfDestructing();
+
+    tagDao.getAlias(keyword).ifPresent(alias ->
+        message.editEmbed(
+            eb -> eb.addField("Aliased to", alias.target(), true)
+        )
+    );
+
+    message.editEmbed(it -> it.addField("Value", tag.value(), false));
+
     source.getMessageSender().sendMessage(
-        new ComplexMessage(MessageCategory.INFORMATION)
-            .editEmbed(it -> it.addField("Keyword", tag.keyword(), true))
-            .editEmbed(it -> it.addField("Description", tag.description(), true))
-            .editEmbed(it -> it.addField("Value", tag.value(), false))
-            .notSelfDestructing(),
+        message,
         source.getChannel()
     );
 
@@ -85,7 +95,8 @@ class DisplayCommands {
   }
 
   private static int listTags(CommandSource source) {
-    String tags = source.getContext().getDatabase().getTagDao().getAll()
+    TagDao tagDao = source.getContext().getDatabase().getTagDao();
+    String tags = tagDao.getAllTags()
         .stream()
         .map(MessageTag::keyword)
         .sorted()
@@ -95,8 +106,21 @@ class DisplayCommands {
       tags = "There are no tags configured yet :/";
     }
 
+    ComplexMessage message = new ComplexMessage(MessageCategory.SUCCESS);
+    message.getEmbedBuilder().addField("Tags", tags, false);
+
+    String aliases = tagDao.getAllAliases()
+        .stream()
+        .map(alias -> alias.keyword() + " -> " + alias.target())
+        .sorted()
+        .collect(Collectors.joining(", "));
+
+    if (!aliases.isEmpty()) {
+      message.editEmbed(eb -> eb.addField("Aliases", aliases, false));
+    }
+
     source.getMessageSender().sendMessage(
-        SimpleMessage.success(tags),
+        message,
         source.getChannel()
     );
 

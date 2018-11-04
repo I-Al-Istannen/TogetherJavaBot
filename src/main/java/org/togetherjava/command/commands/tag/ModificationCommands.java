@@ -121,11 +121,22 @@ class ModificationCommands {
     TagDao tagDao = source.getContext().getDatabase().getTagDao();
 
     if (tagDao.deleteTag(keyword) <= 0) {
+      if (tagDao.getAlias(keyword).isPresent()) {
+        return sendIsAnAlias(source);
+      }
       return sendTagNotFound(source, keyword);
     }
 
     source.getMessageSender().sendMessage(
         SimpleMessage.success("Tag '" + keyword + "' deleted."),
+        source.getChannel()
+    );
+    return 0;
+  }
+
+  private static int sendIsAnAlias(CommandSource source) {
+    source.getMessageSender().sendMessage(
+        SimpleMessage.error("The tag is actually an alias. Use 'tag alias' instead."),
         source.getChannel()
     );
     return 0;
@@ -139,6 +150,10 @@ class ModificationCommands {
     Optional<MessageTag> tagOptional = tagDao.getByKeyword(keyword);
     if (!tagOptional.isPresent()) {
       return sendTagNotFound(source, keyword);
+    }
+
+    if (tagDao.getAlias(keyword).isPresent()) {
+      return sendIsAnAlias(source);
     }
 
     tagDao.editTag(
@@ -164,7 +179,7 @@ class ModificationCommands {
         .anyMatch(roleIds::contains);
   }
 
-  private static void assertCanModify(Member member, Toml config) {
+  static void assertCanModify(Member member, Toml config) {
     if (!hasPermissionToModify(member, config)) {
       throw CommonExceptions.noPermission("Not in a needed role.");
     }

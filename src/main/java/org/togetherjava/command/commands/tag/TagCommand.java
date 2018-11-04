@@ -23,6 +23,7 @@ public class TagCommand implements TJCommand {
         );
     ModificationCommands.addCommands(parent);
     DisplayCommands.addCommands(parent);
+    AliasCommands.addCommands(parent);
 
     return parent.build();
   }
