@@ -1,14 +1,11 @@
 package org.togetherjava.command;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -32,8 +29,6 @@ public class CommandListener extends ListenerAdapter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CommandListener.class);
 
-  private Cache<String, ParseResults<CommandSource>> commandCache;
-
   private CommandDispatcher<CommandSource> dispatcher;
   private String prefix;
   private Context context;
@@ -41,9 +36,6 @@ public class CommandListener extends ListenerAdapter {
   public CommandListener(String prefix) {
     this.prefix = prefix;
     this.dispatcher = new CommandDispatcher<>();
-    this.commandCache = CacheBuilder.newBuilder()
-        .maximumSize(30)
-        .build();
 
     RootCommandNode<CommandSource> root = dispatcher.getRoot();
     ClassDiscovery.find(
@@ -98,20 +90,12 @@ public class CommandListener extends ListenerAdapter {
       command = "help";
     }
 
-    ParseResults<CommandSource> parseResults = parse(command, source);
+    ParseResults<CommandSource> parseResults = dispatcher.parse(command, source);
 
     if (commandFound(parseResults)) {
       executeCommand(parseResults, source);
     } else {
       sendCommandNotFound(parseResults, message);
-    }
-  }
-
-  private ParseResults<CommandSource> parse(String command, CommandSource source) {
-    try {
-      return commandCache.get(command, () -> dispatcher.parse(command, source));
-    } catch (ExecutionException e) {
-      throw new RuntimeException(e);
     }
   }
 
