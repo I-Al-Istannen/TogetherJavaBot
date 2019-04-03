@@ -59,6 +59,9 @@ public class DestructingMessageSender implements MessageSender {
   }
 
   private void deleteAfter(Message message, Duration duration) {
+    message.getReactions().forEach(messageReaction -> {
+      messageReaction.removeReaction(message.getAuthor());
+    });
     message.delete().queueAfter(duration.getSeconds(), TimeUnit.SECONDS);
   }
 }

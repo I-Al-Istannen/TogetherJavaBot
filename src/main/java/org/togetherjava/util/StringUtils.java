@@ -1,23 +1,28 @@
 package org.togetherjava.util;
 
-public class StringUtils {
+public final class StringUtils {
 
   public static final char ZERO_WIDTH_SPACE = '\u200B';
 
+  private static final String ELLIPSIS = "...";
+
+  // utility class
+  private StringUtils() {
+    throw new UnsupportedOperationException();
+  }
+
   /**
-   * Repeats a given string amount times.
+   * Trims the string to the given length and appends ellipsis if needed.
    *
-   * @param input the input to repeat
-   * @param amount the amount to repeat it by
-   * @return the repeated string
+   * @param input the input string
+   * @param maxSize the maximum size
+   * @return the trimmed string with ellipsis appended, if it was cut
    */
-  public static String repeat(String input, int amount) {
-    StringBuilder result = new StringBuilder();
-
-    for (int i = 0; i < amount; i++) {
-      result.append(input);
+  public static String trimToSize(String input, int maxSize) {
+    if (input.length() <= maxSize) {
+      return input;
+    } else {
+      return input.substring(0, maxSize - ELLIPSIS.length()) + ELLIPSIS;
     }
-
-    return result.toString();
   }
 }
