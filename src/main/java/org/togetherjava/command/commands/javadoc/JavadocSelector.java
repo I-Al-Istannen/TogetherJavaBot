@@ -133,6 +133,16 @@ public class JavadocSelector {
     return methodParameters.equals(parameterTypes);
   }
 
+  @Override
+  public String toString() {
+    return "JavadocSelector{" +
+        "typeName='" + typeName + '\'' +
+        ", memberName='" + memberName + '\'' +
+        ", parameterTypes=" + parameterTypes +
+        ", type=" + type +
+        '}';
+  }
+
   /**
    * Parses a String to a selector.
    *
@@ -163,7 +173,7 @@ public class JavadocSelector {
   private static JavadocType parseType(String input) {
     JavadocType type;
     if (!input.contains(TYPE_SEPARATOR)) {
-      if (input.matches(".+[A-z].+")) {
+      if (input.matches(".*[A-Z].*")) {
         type = JavadocType.CLASS;
       } else {
         type = JavadocType.PACKAGE;
