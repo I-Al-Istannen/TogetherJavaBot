@@ -70,11 +70,18 @@ public class JavadocCommand implements TJCommand {
   public LiteralCommandNode<CommandSource> getCommand(CommandDispatcher<CommandSource> dispatcher) {
     return literal("doc")
         .shortDescription("Shows javadoc")
+        .longDescription("Allows you to view the javadoc of the standard library right in discord.")
         .then(
-            argument("fqn", greedyString())
+            argument("pathToType", greedyString())
                 .shortDescription("Shows javadoc for a given class, package or member.")
+                .longDescription(
+                    "The format is `[package.]Type[#member]`."
+                        + " To tell it you want to resolve a method and not a field,"
+                        + " please always include at least an opening brace after the member name,"
+                        + " e.g. `String#String(`"
+                )
                 .executes(context -> {
-                  String selectorString = context.getArgument("fqn", String.class);
+                  String selectorString = context.getArgument("pathToType", String.class);
                   CommandSource commandSource = context.getSource();
 
                   JavadocSelector selector = JavadocSelector.fromString(selectorString);
