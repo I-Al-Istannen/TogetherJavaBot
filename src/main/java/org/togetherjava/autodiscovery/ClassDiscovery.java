@@ -35,6 +35,7 @@ public final class ClassDiscovery {
           .stream()
           .flatMap(instantiateClasses())
           .filter(typeToken::isAssignableFrom)
+          .filter(aClass -> !aClass.isAnnotationPresent(IgnoreAutoDiscovery.class))
           .map(aClass -> (Class<T>) aClass)
           .flatMap(instantiate())
           .collect(Collectors.toList());
