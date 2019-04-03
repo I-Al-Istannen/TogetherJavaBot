@@ -5,10 +5,12 @@ import static org.togetherjava.command.CommandGenericHelper.literal;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import org.togetherjava.autodiscovery.IgnoreAutoDiscovery;
 import org.togetherjava.command.CommandSource;
 import org.togetherjava.command.TJCommand;
 import org.togetherjava.messaging.SimpleMessage;
 
+@IgnoreAutoDiscovery
 public class TagCommand implements TJCommand {
 
   @Override
