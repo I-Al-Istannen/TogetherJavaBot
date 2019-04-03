@@ -5,7 +5,9 @@ import de.ialistannen.htmljavadocparser.model.properties.HasFields;
 import de.ialistannen.htmljavadocparser.model.properties.Invocable;
 import de.ialistannen.htmljavadocparser.model.properties.Invocable.Parameter;
 import de.ialistannen.htmljavadocparser.model.properties.JavadocElement;
+import de.ialistannen.htmljavadocparser.model.types.JavadocClass;
 import de.ialistannen.htmljavadocparser.model.types.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
@@ -93,7 +95,13 @@ public class JavadocSelector {
 
   @NotNull
   private List<Invocable> findMethod(Type owner) {
-    List<Invocable> potentialMethods = owner.getMethods().stream()
+    List<Invocable> allInvocables = new ArrayList<>(owner.getMethods());
+
+    if (owner instanceof JavadocClass) {
+      allInvocables.addAll(((JavadocClass) owner).getConstructors());
+    }
+
+    List<Invocable> potentialMethods = allInvocables.stream()
         .filter(invocable -> invocable.getSimpleName().startsWith(memberName))
         .collect(Collectors.toList());
 
@@ -187,7 +195,7 @@ public class JavadocSelector {
   private static List<String> extractParameter(String input) {
     String inParens = input.replaceAll(".+\\((.*)\\).*", "$1");
     String withoutSpaces = inParens.replaceAll("\\s", "");
-    return List.of(withoutSpaces.split(","));
+    return withoutSpaces.isEmpty() ? List.of() : List.of(withoutSpaces.split(","));
   }
 
   /**
