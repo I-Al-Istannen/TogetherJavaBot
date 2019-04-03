@@ -42,12 +42,13 @@ public enum NavigationEmoji {
   /**
    * Returns the offset needed to reach this element.
    *
-   * @param current the offset
+   * @param current the current page, zero based
    * @return the offset needed to reach this element.
    */
   public int getOffset(int current) {
     if (isNumber) {
-      return number - current;
+      // input is zero based, numbers displayed are not
+      return number - current - 1;
     }
     return number;
   }

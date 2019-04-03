@@ -118,6 +118,9 @@ public class PaginationWatcher<T> implements ReactionWatcher {
         message.addReaction(NavigationEmoji.BACKWARD.getEmoji()).queue();
       }
       for (int i = 0; i < Math.min(getPageCount(), 3); i++) {
+        if (i + currentPage >= getPageCount()) {
+          break;
+        }
         NavigationEmoji.getForNumber(i + currentPage + 1)
             .map(NavigationEmoji::getEmoji)
             .map(message::addReaction)
