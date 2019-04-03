@@ -99,6 +99,9 @@ public class JavadocCommand implements TJCommand {
         .then(
             new JavadocListMethodsCommand(javadocApi).getCommand(dispatcher)
         )
+        .then(
+            new JavadocListClassesInPackageCommand(javadocApi).getCommand(dispatcher)
+        )
         .build();
   }
 

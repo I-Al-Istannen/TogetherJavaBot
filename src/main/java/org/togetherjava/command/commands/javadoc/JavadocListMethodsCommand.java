@@ -18,6 +18,7 @@ import java.util.List;
 import org.togetherjava.autodiscovery.IgnoreAutoDiscovery;
 import org.togetherjava.command.CommandSource;
 import org.togetherjava.command.TJCommand;
+import org.togetherjava.command.exceptions.CommandException;
 import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.PaginatedMessage;
 import org.togetherjava.messaging.SimpleMessage;
@@ -55,7 +56,7 @@ class JavadocListMethodsCommand implements TJCommand {
                   }
 
                   if (types.isEmpty()) {
-                    return JavadocCommand.sendNothingFound(commandSource);
+                    throw new CommandException("Nothing found :(");
                   }
 
                   JavadocElement element = types.get(0);
