@@ -11,6 +11,9 @@ import org.togetherjava.messaging.BotMessage.DestructionState;
 import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.transforming.Transformer;
 
+/**
+ * A Message sender that can delete messages after a timeout.
+ */
 public class DestructingMessageSender implements MessageSender {
 
   private Toml toml;
@@ -30,6 +33,8 @@ public class DestructingMessageSender implements MessageSender {
 
   private Consumer<Message> destructingConsumer(BotMessage botMessage) {
     return sentMessage -> {
+      botMessage.afterSend(sentMessage);
+
       if (botMessage.getSelfDestructingState() == DestructionState.NOT_DESTRUCTING) {
         return;
       }
@@ -42,7 +47,7 @@ public class DestructingMessageSender implements MessageSender {
       }
 
       if (destructionDelay != null) {
-        deleteAfter(sentMessage, destructionDelay);
+        deleteAfter(botMessage, sentMessage, destructionDelay);
       }
     };
   }
@@ -58,10 +63,11 @@ public class DestructingMessageSender implements MessageSender {
     return Duration.ofSeconds(delay);
   }
 
-  private void deleteAfter(Message message, Duration duration) {
-    message.getReactions().forEach(messageReaction -> {
-      messageReaction.removeReaction(message.getAuthor());
-    });
-    message.delete().queueAfter(duration.getSeconds(), TimeUnit.SECONDS);
+  private void deleteAfter(BotMessage botMessage, Message message, Duration duration) {
+    message.delete().queueAfter(
+        duration.getSeconds(),
+        TimeUnit.SECONDS,
+        ignored -> botMessage.afterDestruction(message)
+    );
   }
 }

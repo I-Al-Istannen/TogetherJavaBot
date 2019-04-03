@@ -69,8 +69,10 @@ public class JavadocCommand implements TJCommand {
   @Override
   public LiteralCommandNode<CommandSource> getCommand(CommandDispatcher<CommandSource> dispatcher) {
     return literal("doc")
+        .shortDescription("Shows javadoc")
         .then(
             argument("fqn", greedyString())
+                .shortDescription("Shows javadoc for a given class, package or member.")
                 .executes(context -> {
                   String selectorString = context.getArgument("fqn", String.class);
                   CommandSource commandSource = context.getSource();
@@ -81,11 +83,7 @@ public class JavadocCommand implements TJCommand {
                     List<? extends JavadocElement> foundElements = selector.select(javadocApi);
 
                     if (foundElements.isEmpty()) {
-                      commandSource.getMessageSender().sendMessage(
-                          SimpleMessage.error("Nothing found :("),
-                          commandSource.getChannel()
-                      );
-                      return 0;
+                      return sendNothingFound(commandSource);
                     }
 
                     if (foundElements.size() == 1) {
@@ -97,6 +95,9 @@ public class JavadocCommand implements TJCommand {
                     throw new CommandException(e.getMessage());
                   }
                 })
+        )
+        .then(
+            new JavadocListMethodsCommand(javadocApi).getCommand(dispatcher)
         )
         .build();
   }
@@ -117,7 +118,28 @@ public class JavadocCommand implements TJCommand {
     return 0;
   }
 
-  private int sendMultipleFoundError(CommandSource source,
+  /**
+   * Sends an error message saying that no types were found.
+   *
+   * @param commandSource the command source
+   * @return the return value for brigadier
+   */
+  static int sendNothingFound(CommandSource commandSource) {
+    commandSource.getMessageSender().sendMessage(
+        SimpleMessage.error("Nothing found :("),
+        commandSource.getChannel()
+    );
+    return 0;
+  }
+
+  /**
+   * Sends an error with a list of the found elements.
+   *
+   * @param source the command source
+   * @param foundElements the found elements
+   * @return the return value for brigadier
+   */
+  static int sendMultipleFoundError(CommandSource source,
       List<? extends JavadocElement> foundElements) {
     String types = foundElements.stream()
         .map(JavadocElement::getFullyQualifiedName)

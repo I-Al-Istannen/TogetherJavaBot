@@ -35,20 +35,26 @@ public class TogetherJavaBot {
    * @throws LoginException if the token is invalid or another error prevents login
    */
   public void start(String token) throws InterruptedException, LoginException {
-    Transformer<BotMessage, ComplexMessage> toComplexMessage = Transformer.typeSwitch(
-        SimpleMessage.class,
-        ComplexMessage.class,
-        new EmbedTransformer(),
-        it -> it
-    );
+    Transformer<BotMessage, BotMessage> simpleMessageTransformer = Transformer
+        .defaultTypeSwitch(
+            SimpleMessage.class,
+            new EmbedTransformer(),
+            message -> message
+        );
 
-    Transformer<BotMessage, Message> transformer = toComplexMessage
-        .then(new CategoryColorTransformer())
-        .then(ComplexMessage::toDiscordMessage);
+    Transformer<BotMessage, BotMessage> embedColorTransformer = Transformer
+        .defaultTypeSwitch(
+            ComplexMessage.class,
+            new CategoryColorTransformer(),
+            it -> it
+        );
+
+    Transformer<BotMessage, Message> toMessageTransformer = message -> message.toDiscordMessage()
+        .build();
 
     DestructingMessageSender messageSender = new DestructingMessageSender(
         config,
-        transformer
+        simpleMessageTransformer.then(embedColorTransformer).then(toMessageTransformer)
     );
 
     ReactionListener reactionListener = new ReactionListener();

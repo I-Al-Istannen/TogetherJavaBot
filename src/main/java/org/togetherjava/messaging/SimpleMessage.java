@@ -1,5 +1,7 @@
 package org.togetherjava.messaging;
 
+import net.dv8tion.jda.core.MessageBuilder;
+
 public class SimpleMessage extends BotMessage<SimpleMessage> {
 
   private String content;
@@ -21,6 +23,11 @@ public class SimpleMessage extends BotMessage<SimpleMessage> {
   @Override
   protected SimpleMessage getSelf() {
     return this;
+  }
+
+  @Override
+  public MessageBuilder toDiscordMessage() {
+    return new MessageBuilder(getContent());
   }
 
   /**

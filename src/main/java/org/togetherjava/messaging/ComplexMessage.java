@@ -3,7 +3,6 @@ package org.togetherjava.messaging;
 import java.util.function.Consumer;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.Message;
 
 public class ComplexMessage extends BotMessage<ComplexMessage> {
 
@@ -62,16 +61,27 @@ public class ComplexMessage extends BotMessage<ComplexMessage> {
   }
 
   /**
-   * Builds this Message as a discord {@link Message}.
+   * Sets the embed builder.
    *
-   * @return the created discord message
+   * @param embedBuilder the embed builder
+   * @return this object
    */
-  public Message toDiscordMessage() {
+  public ComplexMessage withEmbedBuilder(EmbedBuilder embedBuilder) {
+    this.embedBuilder = embedBuilder;
+
+    return this;
+  }
+
+  /**
+   * Builds this Message as a discord {@link MessageBuilder}.
+   *
+   * @return the created discord message builder
+   */
+  public MessageBuilder toDiscordMessage() {
     if (embedBuilder.isEmpty()) {
-      return messageBuilder.build();
+      return messageBuilder;
     }
     return messageBuilder
-        .setEmbed(embedBuilder.build())
-        .build();
+        .setEmbed(embedBuilder.build());
   }
 }

@@ -15,7 +15,7 @@ import org.togetherjava.command.TJCommand;
 import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.ComplexMessage;
 import org.togetherjava.messaging.messages.CommandMessages;
-import org.togetherjava.messaging.transforming.VerionInfoFooterTransformer;
+import org.togetherjava.messaging.transforming.VersionInfoFooterTransformer;
 import org.togetherjava.util.StringUtils;
 
 public class HelpCommand implements TJCommand {
@@ -45,7 +45,7 @@ public class HelpCommand implements TJCommand {
     ComplexMessage complexMessage = new ComplexMessage(MessageCategory.ERROR)
         .notSelfDestructing()
         .editEmbed(it -> it.setTitle("Available commands:"))
-        .applyTransformer(new VerionInfoFooterTransformer());
+        .editEmbed(it -> new VersionInfoFooterTransformer().transform(it));
 
     for (var usageEntry : dispatcher.getSmartUsage(dispatcher.getRoot(), source).entrySet()) {
       String usage = prefix + usageEntry.getValue().replace("|", " | ");

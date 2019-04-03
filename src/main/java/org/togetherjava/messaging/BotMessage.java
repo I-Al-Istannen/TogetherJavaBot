@@ -1,8 +1,15 @@
 package org.togetherjava.messaging;
 
 import java.time.Duration;
+import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.core.entities.Message;
 import org.togetherjava.messaging.transforming.Transformer;
 
+/**
+ * A bot message.
+ *
+ * @param <T> the type of the message
+ */
 public abstract class BotMessage<T extends BotMessage<T>> {
 
   private Duration selfDestructDuration;
@@ -48,7 +55,7 @@ public abstract class BotMessage<T extends BotMessage<T>> {
    * Returns the duration after which a message self destructs.
    *
    * @return the duration after which the message self destructs. Not null if {@link
-   * #getSelfDestructingState()} is {@link DestructionState#SELF_DESTRUCTING}
+   *     #getSelfDestructingState()} is {@link DestructionState#SELF_DESTRUCTING}
    */
   public Duration getSelfDestructDelay() {
     return selfDestructDuration;
@@ -98,6 +105,29 @@ public abstract class BotMessage<T extends BotMessage<T>> {
     transformer.transform(getSelf());
 
     return getSelf();
+  }
+
+  /**
+   * Converts this bor message to a discord message builder.
+   *
+   * @return the discord message builder
+   */
+  public abstract MessageBuilder toDiscordMessage();
+
+  /**
+   * Called when the message was sent.
+   *
+   * @param message the resulting message
+   */
+  public void afterSend(Message message) {
+  }
+
+  /**
+   * Called when the message was destructed.
+   *
+   * @param message the message
+   */
+  public void afterDestruction(Message message) {
   }
 
   /**

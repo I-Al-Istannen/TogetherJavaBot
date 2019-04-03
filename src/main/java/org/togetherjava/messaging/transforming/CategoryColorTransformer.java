@@ -3,6 +3,9 @@ package org.togetherjava.messaging.transforming;
 import java.awt.Color;
 import org.togetherjava.messaging.ComplexMessage;
 
+/**
+ * Sets the embed color depending on the category.
+ */
 public class CategoryColorTransformer implements Transformer<ComplexMessage, ComplexMessage> {
 
   @Override
