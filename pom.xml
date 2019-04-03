@@ -205,9 +205,9 @@
 
     <!--JAVADOC PARSER-->
     <dependency>
-      <groupId>de.ialistannen</groupId>
+      <groupId>com.github.I-Al-Istannen</groupId>
       <artifactId>HtmlJavadocParser</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>d35b24f533</version>
     </dependency>
 
     <dependency>
