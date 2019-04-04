@@ -11,7 +11,6 @@ import de.ialistannen.htmljavadocparser.model.properties.Invocable;
 import de.ialistannen.htmljavadocparser.model.properties.JavadocElement;
 import de.ialistannen.htmljavadocparser.model.types.JavadocClass;
 import de.ialistannen.htmljavadocparser.model.types.Type;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -79,8 +78,7 @@ class JavadocListMethodsCommand implements TJCommand {
                   )
                       .withElements(methods)
                       .withPageSize(10)
-                      .withToStringConverter(invocable -> "`" + invocable.getDeclaration() + "`")
-                      .selfDestructing(Duration.ofSeconds(20));
+                      .withToStringConverter(invocable -> "`" + invocable.getDeclaration() + "`");
 
                   commandSource.getMessageSender().sendMessage(
                       paginatedMessage, commandSource.getChannel()

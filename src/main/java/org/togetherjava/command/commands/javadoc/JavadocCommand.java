@@ -4,6 +4,7 @@ import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static org.togetherjava.command.CommandGenericHelper.argument;
 import static org.togetherjava.command.CommandGenericHelper.literal;
 
+import com.moandjiezana.toml.Toml;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import de.ialistannen.htmljavadocparser.JavadocApi;
@@ -12,15 +13,12 @@ import de.ialistannen.htmljavadocparser.model.properties.JavadocElement;
 import de.ialistannen.htmljavadocparser.resolving.CachingDocumentResolver;
 import de.ialistannen.htmljavadocparser.resolving.CachingDocumentResolver.SimpleCache;
 import de.ialistannen.htmljavadocparser.resolving.DocumentResolver;
-import java.io.IOException;
-import java.lang.module.ResolutionException;
-import java.time.Duration;
+import de.ialistannen.htmljavadocparser.resolving.UrlDocumentResolver;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.togetherjava.command.CommandSource;
 import org.togetherjava.command.TJCommand;
@@ -35,19 +33,12 @@ public class JavadocCommand implements TJCommand {
   private JavadocApi javadocApi;
   private JavadocMessageFormatter messageFormatter;
 
-  public JavadocCommand() {
+  public JavadocCommand(Toml config) {
     this.messageFormatter = new JavadocMessageFormatter();
+    String baseUrl = config.getString("javadoc.base-url");
 
-    String baseUrl = "https://docs.oracle.com/javase/10/docs/api";
     DocumentResolver documentResolver = new CachingDocumentResolver(
-        url -> {
-          try {
-            return Jsoup.connect(url).get();
-          } catch (IOException e) {
-            e.printStackTrace();
-            throw new ResolutionException(e);
-          }
-        },
+        new UrlDocumentResolver(baseUrl),
         new SimpleCache<>() {
           private Map<String, Document> cache = new HashMap<>();
 
@@ -63,7 +54,11 @@ public class JavadocCommand implements TJCommand {
         }
     );
 
-    this.javadocApi = new JavadocApi(baseUrl, documentResolver);
+    this.javadocApi = new JavadocApi(
+        baseUrl,
+        config.getString("javadoc.all-classes-appendix"),
+        documentResolver
+    );
   }
 
   @Override
@@ -159,8 +154,7 @@ public class JavadocCommand implements TJCommand {
 
     ComplexMessage message = new ComplexMessage(MessageCategory.ERROR)
         .editEmbed(eb -> eb.setTitle("I found at least the following types:"))
-        .editEmbed(eb -> eb.setDescription(types))
-        .selfDestructing(Duration.ofSeconds(15));
+        .editEmbed(eb -> eb.setDescription(types));
 
     source.getMessageSender().sendMessage(
         message, source.getChannel()

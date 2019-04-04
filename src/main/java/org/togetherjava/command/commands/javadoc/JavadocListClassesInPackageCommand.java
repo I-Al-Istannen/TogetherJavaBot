@@ -9,7 +9,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import de.ialistannen.htmljavadocparser.JavadocApi;
 import de.ialistannen.htmljavadocparser.model.JavadocPackage;
 import de.ialistannen.htmljavadocparser.model.types.Type;
-import java.time.Duration;
 import java.util.List;
 import org.togetherjava.autodiscovery.IgnoreAutoDiscovery;
 import org.togetherjava.command.CommandSource;
@@ -50,8 +49,7 @@ class JavadocListClassesInPackageCommand implements TJCommand {
                       MessageCategory.SUCCESS, reactionListener)
                       .withElements(types)
                       .withPageSize(10)
-                      .withToStringConverter(type -> "`" + type.getSimpleName() + "`")
-                      .selfDestructing(Duration.ofSeconds(20));
+                      .withToStringConverter(type -> "`" + type.getSimpleName() + "`");
 
                   source.getMessageSender().sendMessage(
                       message, source.getChannel()

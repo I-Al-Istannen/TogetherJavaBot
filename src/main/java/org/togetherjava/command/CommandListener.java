@@ -1,5 +1,6 @@
 package org.togetherjava.command;
 
+import com.moandjiezana.toml.Toml;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.context.ParsedCommandNode;
@@ -33,7 +34,7 @@ public class CommandListener extends ListenerAdapter {
   private String prefix;
   private Context context;
 
-  public CommandListener(String prefix) {
+  public CommandListener(String prefix, Toml config) {
     this.prefix = prefix;
     this.dispatcher = new CommandDispatcher<>();
 
@@ -41,7 +42,8 @@ public class CommandListener extends ListenerAdapter {
     ClassDiscovery.find(
         getClass().getClassLoader(),
         "org.togetherjava.command.commands",
-        TJCommand.class
+        TJCommand.class,
+        config
     ).stream()
         .map(tjCommand -> tjCommand.getCommand(dispatcher))
         .forEach(root::addChild);
