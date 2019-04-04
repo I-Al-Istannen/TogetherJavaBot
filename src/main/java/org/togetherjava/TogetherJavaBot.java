@@ -58,7 +58,10 @@ public class TogetherJavaBot {
     );
 
     ReactionListener reactionListener = new ReactionListener();
-    CommandListener commandListener = new CommandListener(config.getString("commands.prefix"));
+    CommandListener commandListener = new CommandListener(
+        config.getString("commands.prefix"),
+        config
+    );
     Database database = new Database(config.getString("database.connection-url"));
 
     Context context = new Context(messageSender, reactionListener, commandListener, config,
