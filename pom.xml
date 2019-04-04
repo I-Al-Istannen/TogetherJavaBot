@@ -210,10 +210,19 @@
       <version>619378ecc2</version>
     </dependency>
 
+    <!--JAVADOC HTML FORMATTER-->
     <dependency>
       <groupId>com.overzealous</groupId>
       <artifactId>remark</artifactId>
       <version>1.1.0</version>
+    </dependency>
+
+    <!--CACHING-->
+    <!-- https://mvnrepository.com/artifact/com.github.ben-manes.caffeine/caffeine -->
+    <dependency>
+      <groupId>com.github.ben-manes.caffeine</groupId>
+      <artifactId>caffeine</artifactId>
+      <version>2.7.0</version>
     </dependency>
 
   </dependencies>

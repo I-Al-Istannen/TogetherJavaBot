@@ -4,6 +4,8 @@ import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static org.togetherjava.command.CommandGenericHelper.argument;
 import static org.togetherjava.command.CommandGenericHelper.literal;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.moandjiezana.toml.Toml;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -12,9 +14,7 @@ import de.ialistannen.htmljavadocparser.model.doc.JavadocComment;
 import de.ialistannen.htmljavadocparser.model.properties.JavadocElement;
 import de.ialistannen.htmljavadocparser.resolving.CachingDocumentResolver;
 import de.ialistannen.htmljavadocparser.resolving.CachingDocumentResolver.SimpleCache;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.jsoup.nodes.Document;
@@ -36,7 +36,13 @@ public class JavadocCommand implements TJCommand {
     this.javadocApi = new JavadocApi();
 
     SimpleCache<String, Document> cache = new SimpleCache<>() {
-      private Map<String, Document> cache = new HashMap<>();
+      private Cache<String, Document> cache = Caffeine.newBuilder()
+          .<String, Document>weigher((key, value) -> key.length() + value.outerHtml().length())
+          // maximum char count. One char is 2 byte, let's use a maximum for 50 MB
+          // 50 * 1024 * 1024 / 2
+          // MB    KB      B
+          .maximumWeight(50 * 1024 * 1024 / 2)
+          .build();
 
       @Override
       public void put(String key, Document value) {
@@ -45,7 +51,7 @@ public class JavadocCommand implements TJCommand {
 
       @Override
       public Document get(String key) {
-        return cache.get(key);
+        return cache.getIfPresent(key);
       }
     };
 
