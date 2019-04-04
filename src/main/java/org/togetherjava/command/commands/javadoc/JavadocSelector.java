@@ -45,10 +45,10 @@ public class JavadocSelector {
    */
   public List<? extends JavadocElement> select(JavadocApi api) {
     if (type == JavadocType.PACKAGE) {
-      return api.getIndex().getPackage(typeName).stream().collect(Collectors.toList());
+      return api.getPackage(typeName).stream().collect(Collectors.toList());
     }
 
-    List<Type> potentialTypes = api.getIndex().findMatching(this::matches);
+    List<Type> potentialTypes = api.findMatching(this::matches);
 
     if (potentialTypes.stream().anyMatch(this::matchesExact)) {
       potentialTypes = potentialTypes.stream()

@@ -38,7 +38,7 @@ class JavadocListClassesInPackageCommand implements TJCommand {
                   CommandSource source = context.getSource();
                   String packageName = context.getArgument("package name", String.class);
 
-                  JavadocPackage javadocPackage = javadocApi.getIndex().getPackage(packageName)
+                  JavadocPackage javadocPackage = javadocApi.getPackage(packageName)
                       .orElseThrow(() -> new CommandException("Package not found :("));
 
                   List<Type> types = javadocPackage.getContainedTypes();

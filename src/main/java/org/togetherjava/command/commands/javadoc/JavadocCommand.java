@@ -12,8 +12,6 @@ import de.ialistannen.htmljavadocparser.model.doc.JavadocComment;
 import de.ialistannen.htmljavadocparser.model.properties.JavadocElement;
 import de.ialistannen.htmljavadocparser.resolving.CachingDocumentResolver;
 import de.ialistannen.htmljavadocparser.resolving.CachingDocumentResolver.SimpleCache;
-import de.ialistannen.htmljavadocparser.resolving.DocumentResolver;
-import de.ialistannen.htmljavadocparser.resolving.UrlDocumentResolver;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,30 +33,33 @@ public class JavadocCommand implements TJCommand {
 
   public JavadocCommand(Toml config) {
     this.messageFormatter = new JavadocMessageFormatter();
-    String baseUrl = config.getString("javadoc.base-url");
+    this.javadocApi = new JavadocApi();
 
-    DocumentResolver documentResolver = new CachingDocumentResolver(
-        new UrlDocumentResolver(baseUrl),
-        new SimpleCache<>() {
-          private Map<String, Document> cache = new HashMap<>();
+    SimpleCache<String, Document> cache = new SimpleCache<>() {
+      private Map<String, Document> cache = new HashMap<>();
 
-          @Override
-          public void put(String key, Document value) {
-            cache.put(key, value);
-          }
+      @Override
+      public void put(String key, Document value) {
+        cache.put(key, value);
+      }
 
-          @Override
-          public Document get(String key) {
-            return cache.get(key);
-          }
-        }
-    );
+      @Override
+      public Document get(String key) {
+        return cache.get(key);
+      }
+    };
 
-    this.javadocApi = new JavadocApi(
-        baseUrl,
-        config.getString("javadoc.all-classes-appendix"),
-        documentResolver
-    );
+    for (Toml javadocEntry : config.getTables("javadoc")) {
+      String baseUrl = javadocEntry.getString("base-url");
+
+      javadocApi.addApi(
+          baseUrl,
+          javadocEntry.getString("all-classes-appendix"),
+          new CachingDocumentResolver(
+              new JfxDocumentResolver(baseUrl), cache
+          )
+      );
+    }
   }
 
   @Override

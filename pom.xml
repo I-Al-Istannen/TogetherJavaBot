@@ -207,7 +207,7 @@
     <dependency>
       <groupId>com.github.I-Al-Istannen</groupId>
       <artifactId>HtmlJavadocParser</artifactId>
-      <version>bfcb4f5379</version>
+      <version>1e50b4b640</version>
     </dependency>
 
     <dependency>
