@@ -117,11 +117,18 @@ public class JavadocSelector {
         .filter(this::hasSameParameters)
         .collect(Collectors.toList());
 
-    if (sameParameters.isEmpty()) {
-      return exactMatchingNames;
+    if (!sameParameters.isEmpty()) {
+      return sameParameters;
     }
 
-    return sameParameters;
+    // Only fuzzy match now to allow exact matches to win.
+    // If we did not do this, it would be impossible to match "method(Function)" if there also is
+    // a "method(Functional)", as it would always return both
+    List<Invocable> nearlySameParameters = exactMatchingNames.stream()
+        .filter(this::hasSameParametersFuzzy)
+        .collect(Collectors.toList());
+
+    return nearlySameParameters.isEmpty() ? exactMatchingNames : nearlySameParameters;
   }
 
   private boolean hasSameParameters(Invocable invocable) {
@@ -131,6 +138,35 @@ public class JavadocSelector {
         .collect(Collectors.toList());
 
     return methodParameters.equals(parameterTypes);
+  }
+
+  private boolean hasSameParametersFuzzy(Invocable invocable) {
+    List<String> methodParameters = invocable.getParameters().stream()
+        .map(Parameter::getType)
+        .map(JavadocElement::getSimpleName)
+        .collect(Collectors.toList());
+
+    if (methodParameters.equals(parameterTypes)) {
+      return true;
+    }
+
+    // Ensure they have the same amount as our query
+    if (methodParameters.size() != parameterTypes.size()) {
+      return false;
+    }
+
+    for (int i = 0; i < methodParameters.size(); i++) {
+      String actualParameter = methodParameters.get(i);
+      String supplierParameter = parameterTypes.get(i);
+
+      // allow case insensitive prefix matches (e.g. "fun" for "Function"
+      if (!actualParameter.toLowerCase().startsWith(supplierParameter.toLowerCase())) {
+        return false;
+      }
+    }
+
+    // fuzzy matching successful
+    return true;
   }
 
   @Override
