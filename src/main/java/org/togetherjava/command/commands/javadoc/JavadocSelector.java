@@ -205,7 +205,14 @@ public class JavadocSelector {
   private static List<String> extractParameter(String input) {
     String inParens = input.replaceAll(".+\\((.*)\\).*", "$1");
     String withoutSpaces = inParens.replaceAll("\\s", "");
-    return withoutSpaces.isEmpty() ? List.of() : List.of(withoutSpaces.split(","));
+    List<String> parameters = withoutSpaces.isEmpty()
+        ? List.of()
+        : List.of(withoutSpaces.split(","));
+
+    return parameters.stream()
+        // Allow ... for arrays as well
+        .map(s -> s.replace("...", "[]"))
+        .collect(Collectors.toList());
   }
 
   /**
