@@ -1,6 +1,9 @@
 package org.togetherjava.command.commands.javadoc;
 
+import static org.togetherjava.util.ListUtils.filter;
+
 import de.ialistannen.htmljavadocparser.JavadocApi;
+import de.ialistannen.htmljavadocparser.model.JavadocPackage;
 import de.ialistannen.htmljavadocparser.model.properties.HasFields;
 import de.ialistannen.htmljavadocparser.model.properties.Invocable;
 import de.ialistannen.htmljavadocparser.model.properties.Invocable.Parameter;
@@ -9,8 +12,10 @@ import de.ialistannen.htmljavadocparser.model.types.JavadocClass;
 import de.ialistannen.htmljavadocparser.model.types.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
+import org.togetherjava.util.ListUtils;
 
 /**
  * A selector for javadoc elements
@@ -45,16 +50,18 @@ public class JavadocSelector {
    */
   public List<? extends JavadocElement> select(JavadocApi api) {
     if (type == JavadocType.PACKAGE) {
-      return api.getPackage(typeName).stream().collect(Collectors.toList());
+      Optional<JavadocPackage> packageOptional = api.getPackage(typeName);
+      if (packageOptional.isPresent()) {
+        return List.of(packageOptional.get());
+      }
+      // fall through, maybe it was a lowercase class name
     }
 
-    List<Type> potentialTypes = api.findMatching(this::matches);
-
-    if (potentialTypes.stream().anyMatch(this::matchesExact)) {
-      potentialTypes = potentialTypes.stream()
-          .filter(this::matchesExact)
-          .collect(Collectors.toList());
-    }
+    List<Type> potentialTypes = ListUtils.withFallback(
+        api.findMatching(this::matchesExact),
+        () -> api.findMatching(this::matches),
+        () -> api.findMatching(this::matchesIgnoreCase)
+    );
 
     if (type == JavadocType.CLASS) {
       return potentialTypes;
@@ -78,6 +85,10 @@ public class JavadocSelector {
     return element.getFullyQualifiedName().endsWith(typeName);
   }
 
+  private boolean matchesIgnoreCase(Type element) {
+    return element.getFullyQualifiedName().toLowerCase().endsWith(typeName.toLowerCase());
+  }
+
   private boolean matchesExact(Type element) {
     return element.getSimpleName().equals(typeName);
   }
@@ -88,9 +99,10 @@ public class JavadocSelector {
       throw new IllegalArgumentException("The found element has no fields!");
     }
 
-    return ((HasFields) owner).getFields().stream()
-        .filter(field -> field.getSimpleName().equals(memberName))
-        .collect(Collectors.toList());
+    return filter(
+        ((HasFields) owner).getFields(),
+        field -> field.getSimpleName().equals(memberName)
+    );
   }
 
   @NotNull
@@ -113,22 +125,19 @@ public class JavadocSelector {
       return potentialMethods;
     }
 
-    List<Invocable> sameParameters = exactMatchingNames.stream()
-        .filter(this::hasSameParameters)
-        .collect(Collectors.toList());
-
-    if (!sameParameters.isEmpty()) {
-      return sameParameters;
-    }
-
     // Only fuzzy match now to allow exact matches to win.
     // If we did not do this, it would be impossible to match "method(Function)" if there also is
     // a "method(Functional)", as it would always return both
-    List<Invocable> nearlySameParameters = exactMatchingNames.stream()
-        .filter(this::hasSameParametersFuzzy)
-        .collect(Collectors.toList());
+    List<Invocable> parameterMatches = ListUtils.withFallback(
+        filter(exactMatchingNames, this::hasSameParameters),
+        () -> filter(exactMatchingNames, this::hasSameParametersFuzzy)
+    );
 
-    return nearlySameParameters.isEmpty() ? exactMatchingNames : nearlySameParameters;
+    if (!parameterMatches.isEmpty()) {
+      return parameterMatches;
+    }
+
+    return exactMatchingNames;
   }
 
   private boolean hasSameParameters(Invocable invocable) {
