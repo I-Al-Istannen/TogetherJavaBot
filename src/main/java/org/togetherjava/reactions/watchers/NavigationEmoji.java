@@ -73,6 +73,7 @@ public enum NavigationEmoji {
    */
   public static Optional<NavigationEmoji> getForNumber(int number) {
     return Arrays.stream(values())
+        .filter(it -> it.isNumber)
         .filter(it -> it.number == number)
         .findFirst();
   }
