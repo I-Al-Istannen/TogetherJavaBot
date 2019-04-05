@@ -60,19 +60,21 @@ public class ReactionListener extends ListenerAdapter {
 
   @Override
   public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
-    watchers.removeIf(watcher ->
-        watcher.reactionRemoved(event.getMessageIdLong(), event.getUser(), event.getReaction(),
-            context)
-            == ReactionResult.UNREGISTER
-    );
+    watchers.removeIf(watcher -> {
+      ReactionResult result = watcher
+          .reactionRemoved(event.getMessageIdLong(), event.getUser(), event.getReaction(), context);
+
+      return result == ReactionResult.UNREGISTER;
+    });
   }
 
   @Override
   public void onMessageReactionAdd(MessageReactionAddEvent event) {
-    watchers.removeIf(watcher ->
-        watcher
-            .reactionAdded(event.getMessageIdLong(), event.getUser(), event.getReaction(), context)
-            == ReactionResult.UNREGISTER
-    );
+    watchers.removeIf(watcher -> {
+      ReactionResult result = watcher
+          .reactionAdded(event.getMessageIdLong(), event.getUser(), event.getReaction(), context);
+
+      return result == ReactionResult.UNREGISTER;
+    });
   }
 }
