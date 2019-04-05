@@ -32,8 +32,12 @@ class CodeBlockHandler extends AbstractNodeHandler {
   }
 
   private String stripIndent(String input) {
-    int indentation = (int) input.chars().takeWhile(Character::isWhitespace).count();
-    String indentationString = " ".repeat(indentation);
+    int startIndent = (int) input.chars()
+        // do not count leading newlines
+        .filter(value -> value != '\n' && value != '\r')
+        .takeWhile(Character::isWhitespace)
+        .count();
+    String indentationString = " ".repeat(startIndent);
 
     return input.lines()
         .map(s -> s.replaceFirst(indentationString, ""))
