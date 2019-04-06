@@ -1,12 +1,8 @@
 package org.togetherjava.command.commands.javadoc;
 
-import de.ialistannen.htmljavadocparser.exception.ResolveException;
 import de.ialistannen.htmljavadocparser.resolving.DocumentResolver;
 import de.ialistannen.htmljavadocparser.resolving.UrlDocumentResolver;
 import de.ialistannen.htmljavadocparser.util.LinkUtils;
-import java.io.IOException;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 /**
  * A {@link DocumentResolver} for javafx classes.
@@ -20,16 +16,6 @@ class JfxDocumentResolver extends UrlDocumentResolver {
    */
   public JfxDocumentResolver(String baseUrl) {
     super(baseUrl);
-  }
-
-  @Override
-  public Document resolve(String url) {
-    try {
-      return Jsoup.connect(url).get();
-    } catch (IOException e) {
-      e.printStackTrace();
-      throw new ResolveException("Error fetching url '" + url + "'", e);
-    }
   }
 
   @Override
