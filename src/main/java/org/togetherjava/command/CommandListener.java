@@ -6,7 +6,10 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.RootCommandNode;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -16,7 +19,6 @@ import org.togetherjava.autodiscovery.ClassDiscovery;
 import org.togetherjava.command.commands.HelpCommand;
 import org.togetherjava.command.exceptions.CommandException;
 import org.togetherjava.messaging.SimpleMessage;
-import org.togetherjava.messaging.messages.CommandMessages;
 import org.togetherjava.util.Context;
 
 
@@ -31,11 +33,11 @@ public class CommandListener extends ListenerAdapter {
   private static final Logger LOGGER = LoggerFactory.getLogger(CommandListener.class);
 
   private CommandDispatcher<CommandSource> dispatcher;
-  private String prefix;
+  private Collection<String> prefixes;
   private Context context;
 
-  public CommandListener(String prefix, Toml config) {
-    this.prefix = prefix;
+  public CommandListener(Collection<String> prefixes, Toml config) {
+    this.prefixes = new ArrayList<>(prefixes);
     this.dispatcher = new CommandDispatcher<>();
 
     RootCommandNode<CommandSource> root = dispatcher.getRoot();
@@ -49,8 +51,13 @@ public class CommandListener extends ListenerAdapter {
         .forEach(root::addChild);
   }
 
+  /**
+   * Returns the first (main) prefix.
+   *
+   * @return the main prefix
+   */
   public String getPrefix() {
-    return prefix;
+    return prefixes.iterator().next();
   }
 
   /**
@@ -75,17 +82,20 @@ public class CommandListener extends ListenerAdapter {
     Message message = event.getMessage();
     String command = message.getContentRaw();
 
-    if (!command.startsWith(prefix)) {
+    Optional<String> matchingPrefix = prefixes.stream().filter(command::startsWith).findFirst();
+    if (matchingPrefix.isEmpty()) {
       return;
     }
 
-    command = command.substring(prefix.length()).trim();
+    command = command.substring(matchingPrefix.get().length()).trim();
 
     executeCommand(message, command);
   }
 
   private void executeCommand(Message message, String command) {
     CommandSource source = new CommandSource(message, context);
+
+    LOGGER.info("Executing command {} for {}", command, message.getAuthor().getName());
 
     // Redirect to help, but without redirection
     if (command.isEmpty()) {
@@ -96,8 +106,6 @@ public class CommandListener extends ListenerAdapter {
 
     if (commandFound(parseResults)) {
       executeCommand(parseResults, source);
-    } else {
-      sendCommandNotFound(parseResults, message);
     }
   }
 
@@ -124,16 +132,5 @@ public class CommandListener extends ListenerAdapter {
           source.getChannel()
       );
     }
-  }
-
-  private void sendCommandNotFound(ParseResults<CommandSource> parseResults, Message message) {
-    LOGGER.info("Command not found for user {}", message.getAuthor().getAsMention());
-
-    parseResults.getExceptions().values().forEach(Throwable::printStackTrace);
-
-    context.getMessageSender().sendMessage(
-        CommandMessages.commandNotFound(parseResults.getReader().getString()),
-        message.getChannel()
-    );
   }
 }

@@ -1,6 +1,6 @@
 [commands]
-  # The command prefix, that each command must start with
-  prefix = "!"
+  # The command prefixes, that each command must start with
+  prefixes = ["!", "?"]
 
   # Configuration for the Tag command
   [commands.tag]
@@ -15,8 +15,8 @@
 
 # JDK
 [[javadoc]]
-  base-url = "https://docs.oracle.com/en/java/javase/11/docs/api"
-  all-classes-appendix = "/allclasses.html"
+  base-url = "https://docs.oracle.com/en/java/javase/12/docs/api"
+  all-classes-appendix = "/allclasses-index.html"
 
 # JavaFx
 [[javadoc]]

@@ -59,7 +59,7 @@ public class TogetherJavaBot {
 
     ReactionListener reactionListener = new ReactionListener();
     CommandListener commandListener = new CommandListener(
-        config.getString("commands.prefix"),
+        config.getList("commands.prefixes"),
         config
     );
     Database database = new Database(config.getString("database.connection-url"));
