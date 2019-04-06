@@ -207,7 +207,7 @@
     <dependency>
       <groupId>com.github.I-Al-Istannen</groupId>
       <artifactId>HtmlJavadocParser</artifactId>
-      <version>eef032f250</version>
+      <version>da999910ad</version>
     </dependency>
 
     <!--JAVADOC HTML FORMATTER-->
