@@ -97,9 +97,9 @@ public class CommandListener extends ListenerAdapter {
 
     LOGGER.info("Executing command {} for {}", command, message.getAuthor().getName());
 
-    // Redirect to help, but without redirection
     if (command.isEmpty()) {
-      command = "help";
+      // we didn't find anything
+      return;
     }
 
     ParseResults<CommandSource> parseResults = dispatcher.parse(command, source);
