@@ -24,8 +24,6 @@ public class ApplicationEntry {
     String configPath = Objects
         .requireNonNull(fetchConfigPath(args), "Config path not found");
 
-    final String token = Objects.requireNonNull(fetchToken(), "Token not found.");
-
     File configFile = new File(configPath);
     if (!configFile.exists()) {
       LOGGER.error(
@@ -37,10 +35,16 @@ public class ApplicationEntry {
       System.exit(1);
     }
 
+    LOGGER.info("Using config '{}'.", configFile.getAbsolutePath());
+
     Toml toml = new Toml()
-        .read(new File(configPath));
+        .read(configFile);
 
     new ConfigValidator().validateConfig(toml);
+
+    final String token = Objects.requireNonNull(fetchToken(toml), "Token not found.");
+
+    LOGGER.info("Token acquired");
 
     try {
       new TogetherJavaBot(toml).start(token);
@@ -51,11 +55,17 @@ public class ApplicationEntry {
   }
 
   /**
-   * Attempts to read the bot token from an environment variable.
+   * Attempts to read the bot token from an environment variable or config file.
    *
+   * @param config the config
    * @return the token
    */
-  private static String fetchToken() {
+  private static String fetchToken(Toml config) {
+    LOGGER.info("Looking for bot token in the supplied config...");
+    if (!config.getString("setup.token").isBlank()) {
+      return config.getString("setup.token");
+    }
+
     LOGGER.info("Looking for bot token in the '{}' environment variable...", TOKEN_ENV);
     return System.getenv(TOKEN_ENV);
   }
