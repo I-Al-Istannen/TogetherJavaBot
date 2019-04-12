@@ -46,7 +46,8 @@ class JavadocListClassesInPackageCommand implements TJCommand {
                   ReactionListener reactionListener = source.getContext().getReactionListener();
 
                   PaginatedMessage<Type> message = new PaginatedMessage<Type>(
-                      MessageCategory.SUCCESS, reactionListener)
+                      MessageCategory.SUCCESS, source.getUser().getIdLong(), reactionListener
+                  )
                       .withElements(types)
                       .withPageSize(10)
                       .withToStringConverter(type -> "`" + type.getSimpleName() + "`");

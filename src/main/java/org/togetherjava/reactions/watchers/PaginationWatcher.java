@@ -1,6 +1,7 @@
 package org.togetherjava.reactions.watchers;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -10,7 +11,6 @@ import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageReaction;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.requests.RestAction;
 import org.togetherjava.autodiscovery.IgnoreAutoDiscovery;
 import org.togetherjava.reactions.ReactionWatcher;
 import org.togetherjava.util.Context;
@@ -26,11 +26,19 @@ import org.togetherjava.util.Context;
 @IgnoreAutoDiscovery
 public class PaginationWatcher<T> implements ReactionWatcher {
 
+  // Store them here so we are not dependent on the enum order and can disable certain ones
+  private static final Collection<NavigationEmoji> EMOJIS = List.of(
+      NavigationEmoji.BEGINNING, NavigationEmoji.BACKWARD,
+      NavigationEmoji.DELETE,
+      NavigationEmoji.FORWARD, NavigationEmoji.END
+  );
+
   private List<T> elements;
   private int pageSize;
   private Function<T, String> elementToString;
   private Message message;
   private int currentPage;
+  private long ownerId;
 
   /**
    * Creates a new pagination watcher.
@@ -39,22 +47,31 @@ public class PaginationWatcher<T> implements ReactionWatcher {
    * @param pageSize the size of a page
    * @param elementToString the element to string function
    * @param message the message
+   * @param ownerId the id of the owner
    */
   public PaginationWatcher(List<T> elements, int pageSize, Function<T, String> elementToString,
-      Message message) {
+      Message message, long ownerId) {
     this.elements = new ArrayList<>(elements);
     this.pageSize = pageSize;
     this.elementToString = elementToString;
     this.message = message;
+    this.ownerId = ownerId;
 
     update();
+    applyReactions(message);
+  }
+
+  private void applyReactions(Message message) {
+    for (NavigationEmoji emoji : EMOJIS) {
+      message.addReaction(emoji.getEmoji()).queue();
+    }
   }
 
   @Override
   public ReactionResult reactionAdded(Long messageId, User user, MessageReaction reactionEmote,
       Context context) {
 
-    if (messageId != message.getIdLong() || user.isBot()) {
+    if (messageId != message.getIdLong() || user.getIdLong() != ownerId) {
       return ReactionResult.DO_NOTHING;
     }
 
@@ -66,9 +83,18 @@ public class PaginationWatcher<T> implements ReactionWatcher {
       return ReactionResult.DO_NOTHING;
     }
 
-    int offset = emoji.get().getOffset(currentPage);
+    if (emoji.get() == NavigationEmoji.DELETE) {
+      message.delete().queue();
+      return ReactionResult.UNREGISTER;
+    }
 
-    currentPage = currentPage + offset;
+    currentPage = clamp(
+        emoji.get().getNewPageIndex(currentPage, getPageCount() - 1),
+        getPageCount() - 1
+    );
+
+    // remove the reaction again
+    reactionEmote.removeReaction(user).queue();
 
     update();
 
@@ -89,48 +115,25 @@ public class PaginationWatcher<T> implements ReactionWatcher {
     message.editMessage(
         new MessageBuilder().setEmbed(
             new EmbedBuilder()
+                .setTitle(String.format("Page %d of %d", currentPage + 1, getPageCount()))
                 .setDescription(text)
                 .build()
         ).build()
     ).queue();
-
-    restoreReactions(message);
-  }
-
-  private List<T> getElements(int pageIndex) {
-    int firstElementIndex = pageIndex * pageSize;
-    int end = firstElementIndex + pageSize;
-
-    return elements.subList(clampToElementCount(firstElementIndex), clampToElementCount(end));
-  }
-
-  private int clampToElementCount(int input) {
-    return Math.max(0, Math.min(elements.size(), input));
   }
 
   private int getPageCount() {
     return (int) Math.ceil(elements.size() / (double) pageSize);
   }
 
-  private void restoreReactions(Message message) {
-    message.clearReactions().queue(ignored -> {
-      if (currentPage > 0) {
-        message.addReaction(NavigationEmoji.BACKWARD.getEmoji()).queue();
-      }
-      for (int i = 0; i < Math.min(getPageCount(), 3); i++) {
-        if (i + currentPage >= getPageCount()) {
-          break;
-        }
-        NavigationEmoji.getForNumber(i + currentPage + 1)
-            .map(NavigationEmoji::getEmoji)
-            .map(message::addReaction)
-            .ifPresent(RestAction::queue);
-      }
+  private List<T> getElements(int pageIndex) {
+    int firstElementIndex = pageIndex * pageSize;
+    int end = firstElementIndex + pageSize;
 
-      if (currentPage < getPageCount() - 1) {
-        message.addReaction(NavigationEmoji.FORWARD.getEmoji()).queue();
-      }
+    return elements.subList(clamp(firstElementIndex, elements.size()), clamp(end, elements.size()));
+  }
 
-    });
+  private int clamp(int input, int max) {
+    return Math.max(0, Math.min(max, input));
   }
 }

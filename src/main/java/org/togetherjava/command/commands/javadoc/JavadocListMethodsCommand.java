@@ -74,7 +74,7 @@ class JavadocListMethodsCommand implements TJCommand {
                       .getReactionListener();
 
                   PaginatedMessage<Invocable> paginatedMessage = new PaginatedMessage<Invocable>(
-                      MessageCategory.SUCCESS, reactionListener
+                      MessageCategory.SUCCESS, commandSource.getUser().getIdLong(), reactionListener
                   )
                       .withElements(methods)
                       .withPageSize(10)

@@ -2,32 +2,29 @@ package org.togetherjava.reactions.watchers;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.function.IntBinaryOperator;
+import java.util.function.IntUnaryOperator;
 
 /**
  * Contains emojis representing numbers or forward/backward movements.
  */
 public enum NavigationEmoji {
-  ZERO("0⃣", true, 0),
-  ONE("1⃣", true, 1),
-  TWO("2⃣", true, 2),
-  THREE("3⃣", true, 3),
-  FOUR("4⃣", true, 4),
-  FIVE("5⃣", true, 5),
-  SIX("6⃣", true, 6),
-  SEVEN("7⃣", true, 7),
-  EIGHT("8⃣", true, 8),
-  NINE("9⃣", true, 9),
-  FORWARD("▶", false, 1),
-  BACKWARD("◀", false, -1);
+  BEGINNING("⏮", ignored -> 0),
+  BACKWARD("⏪", current -> current - 1),
+  DELETE("❌", IntUnaryOperator.identity()),
+  FORWARD("⏩", current -> current + 1),
+  END("⏭", (ignored, last) -> last);
 
   private String emoji;
-  private boolean isNumber;
-  private int number;
+  private IntBinaryOperator offset;
 
-  NavigationEmoji(String emoji, boolean isNumber, int number) {
+  NavigationEmoji(String emoji, IntUnaryOperator offset) {
+    this(emoji, (current, max) -> offset.applyAsInt(current));
+  }
+
+  NavigationEmoji(String emoji, IntBinaryOperator offset) {
     this.emoji = emoji;
-    this.isNumber = isNumber;
-    this.number = number;
+    this.offset = offset;
   }
 
   /**
@@ -40,41 +37,25 @@ public enum NavigationEmoji {
   }
 
   /**
-   * Returns the offset needed to reach this element.
+   * Returns the offset.
    *
-   * @param current the current page, zero based
-   * @return the offset needed to reach this element.
+   * @param currentPage the current page index
+   * @param lastPage the last page index
+   * @return the offset
    */
-  public int getOffset(int current) {
-    if (isNumber) {
-      // input is zero based, numbers displayed are not
-      return number - current - 1;
-    }
-    return number;
+  public int getNewPageIndex(int currentPage, int lastPage) {
+    return offset.applyAsInt(currentPage, lastPage);
   }
 
   /**
-   * Returns the emoji for the given emoji string.
+   * Returns the NavigationEmoji for the unicode emoji.
    *
-   * @param emoji the emoji string
-   * @return the NavigationEmoji
+   * @param emoji the unicode emoji
+   * @return the optional
    */
   public static Optional<NavigationEmoji> getForEmoji(String emoji) {
     return Arrays.stream(values())
-        .filter(it -> it.getEmoji().equals(emoji))
-        .findFirst();
-  }
-
-  /**
-   * Returns the emoji for the given number.
-   *
-   * @param number the number
-   * @return the NavigationEmoji
-   */
-  public static Optional<NavigationEmoji> getForNumber(int number) {
-    return Arrays.stream(values())
-        .filter(it -> it.isNumber)
-        .filter(it -> it.number == number)
+        .filter(navigationEmoji -> navigationEmoji.getEmoji().equals(emoji))
         .findFirst();
   }
 }

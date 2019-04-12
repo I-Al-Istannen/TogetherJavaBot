@@ -21,8 +21,7 @@ public class PaginatedMessage<T> extends BotMessage<PaginatedMessage<T>> {
   private List<T> elements;
   private int pageSize;
   private Function<T, String> toStringFunction;
-
-  private EmbedBuilder embedBuilder;
+  private long ownerId;
 
   private ReactionListener reactionListener;
   private ReactionWatcher reactionWatcher;
@@ -31,16 +30,19 @@ public class PaginatedMessage<T> extends BotMessage<PaginatedMessage<T>> {
    * Creates a new paginated message
    *
    * @param category the category
+   * @param ownerId the id of the owner, i.e. the person who can react to the message to
+   *     paginate it
    * @param reactionListener the reaction listener to register to
    */
-  public PaginatedMessage(MessageCategory category, ReactionListener reactionListener) {
+  public PaginatedMessage(MessageCategory category, long ownerId,
+      ReactionListener reactionListener) {
     super(category);
+    this.ownerId = ownerId;
     this.reactionListener = reactionListener;
 
     this.elements = new ArrayList<>();
     this.pageSize = 10;
     this.toStringFunction = Objects::toString;
-    this.embedBuilder = new EmbedBuilder();
   }
 
   /**
@@ -81,7 +83,9 @@ public class PaginatedMessage<T> extends BotMessage<PaginatedMessage<T>> {
 
   @Override
   public void afterSend(Message message) {
-    reactionWatcher = new PaginationWatcher<>(elements, pageSize, toStringFunction, message);
+    reactionWatcher = new PaginationWatcher<>(
+        elements, pageSize, toStringFunction, message, ownerId
+    );
     reactionListener.registerWatcher(reactionWatcher);
   }
 
