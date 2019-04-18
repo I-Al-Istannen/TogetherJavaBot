@@ -20,6 +20,7 @@ import org.togetherjava.command.commands.HelpCommand;
 import org.togetherjava.command.exceptions.CommandException;
 import org.togetherjava.messaging.SimpleMessage;
 import org.togetherjava.util.Context;
+import org.togetherjava.util.StringUtils;
 
 
 /**
@@ -80,7 +81,9 @@ public class CommandListener extends ListenerAdapter {
     }
 
     Message message = event.getMessage();
-    String command = message.getContentRaw();
+    String command = message.getContentRaw()
+        // If this becomes too prevalent it will need to be refactored into a message cleaner system
+        .replace(Character.toString(StringUtils.ZERO_WIDTH_SPACE), "");
 
     Optional<String> matchingPrefix = prefixes.stream().filter(command::startsWith).findFirst();
     if (matchingPrefix.isEmpty()) {
