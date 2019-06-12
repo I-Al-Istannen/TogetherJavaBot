@@ -112,7 +112,7 @@
     <repository>
       <id>jcenter</id>
       <name>jcenter-bintray</name>
-      <url>http://jcenter.bintray.com</url>
+      <url>https://jcenter.bintray.com</url>
     </repository>
 
     <repository>
@@ -207,7 +207,7 @@
     <dependency>
       <groupId>com.github.I-Al-Istannen</groupId>
       <artifactId>HtmlJavadocParser</artifactId>
-      <version>da999910ad</version>
+      <version>5781b12257</version>
     </dependency>
 
     <!--JAVADOC HTML FORMATTER-->
