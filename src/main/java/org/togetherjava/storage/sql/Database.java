@@ -29,6 +29,7 @@ public class Database {
 
     Flyway flyway = Flyway.configure()
         .dataSource(dataSource)
+        .locations("/db")
         .load();
     flyway.migrate();
 
