@@ -3,6 +3,7 @@ package org.togetherjava.util;
 import com.moandjiezana.toml.Toml;
 import org.togetherjava.command.CommandListener;
 import org.togetherjava.messaging.sending.MessageSender;
+import org.togetherjava.permission.PermissionManager;
 import org.togetherjava.reactions.ReactionListener;
 import org.togetherjava.storage.sql.Database;
 
@@ -13,6 +14,7 @@ public class Context {
   private CommandListener commandListener;
   private Toml config;
   private Database database;
+  private PermissionManager permissionManager;
 
   public Context(MessageSender messageSender,
       ReactionListener reactionListener, CommandListener commandListener, Toml config,
@@ -22,6 +24,7 @@ public class Context {
     this.commandListener = commandListener;
     this.config = config;
     this.database = database;
+    this.permissionManager = new PermissionManager(config);
   }
 
   public MessageSender getMessageSender() {
@@ -42,5 +45,9 @@ public class Context {
 
   public Database getDatabase() {
     return database;
+  }
+
+  public PermissionManager getPermissionManager() {
+    return permissionManager;
   }
 }

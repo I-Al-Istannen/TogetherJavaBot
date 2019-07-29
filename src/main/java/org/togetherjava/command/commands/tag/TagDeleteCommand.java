@@ -24,6 +24,7 @@ class TagDeleteCommand {
    */
   LiteralCommandNode<CommandSource> getCommand() {
     return literal("delete")
+        .permission("tag.delete")
         .shortDescription("Deletes a tag.")
         .longDescription("Deletes a tag permanently.")
         .then(argument("name", StringArgumentType.greedyString())

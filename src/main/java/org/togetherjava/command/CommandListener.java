@@ -5,6 +5,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.context.ParsedCommandNode;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,6 +20,7 @@ import org.togetherjava.autodiscovery.ClassDiscovery;
 import org.togetherjava.command.commands.HelpCommand;
 import org.togetherjava.command.exceptions.CommandException;
 import org.togetherjava.messaging.SimpleMessage;
+import org.togetherjava.permission.PermissionManager;
 import org.togetherjava.util.Context;
 import org.togetherjava.util.StringUtils;
 
@@ -108,8 +110,27 @@ public class CommandListener extends ListenerAdapter {
     ParseResults<CommandSource> parseResults = dispatcher.parse(command, source);
 
     if (commandFound(parseResults)) {
+      if (!hasPermission(source, parseResults)) {
+        source.getMessageSender().sendMessage(
+            SimpleMessage.error("You lack the necessary permissions!"),
+            source.getChannel()
+        );
+        return;
+      }
       executeCommand(parseResults, source);
     }
+  }
+
+  private boolean hasPermission(CommandSource source, ParseResults<CommandSource> parseResults) {
+    PermissionManager permissionManager = context.getPermissionManager();
+
+    for (ParsedCommandNode<CommandSource> parseNode : parseResults.getContext().getNodes()) {
+      CommandNode<CommandSource> node = parseNode.getNode();
+      if (!permissionManager.hasPermission(source.getMember(), node.getPermission())) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private boolean commandFound(ParseResults<CommandSource> parseResults) {

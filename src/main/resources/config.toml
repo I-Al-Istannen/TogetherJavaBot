@@ -39,3 +39,7 @@
   [messages.none]
     self-destruct = true
     destruction-delay = 5
+
+[permissions]
+  # The admin, probably
+  id_328235363099213824 = ["tag.create", "tag.delete"]

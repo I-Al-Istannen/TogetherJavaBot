@@ -232,7 +232,7 @@
     <dependency>
       <groupId>com.github.I-Al-Istannen</groupId>
       <artifactId>brigadier</artifactId>
-      <version>6f8647dec4</version>
+      <version>7c281a0894</version>
     </dependency>
 
     <!--CONFIG LANGUAGE-->

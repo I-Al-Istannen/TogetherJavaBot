@@ -65,8 +65,9 @@ public class TogetherJavaBot {
     );
     Database database = new Database(config.getString("database.connection-url"));
 
-    Context context = new Context(messageSender, reactionListener, commandListener, config,
-        database);
+    Context context = new Context(
+        messageSender, reactionListener, commandListener, config, database
+    );
 
     commandListener.setContext(context);
     reactionListener.setContext(context);

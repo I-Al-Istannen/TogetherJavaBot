@@ -24,6 +24,7 @@ class TagCreateCommand {
    */
   LiteralCommandNode<CommandSource> getCommand() {
     return literal("add")
+        .permission("tag.create")
         .shortDescription("Adds a tag or modifies an existing")
         .longDescription(
             "Adds a new tag or modifies an existing. Quoted strings are allowed."
@@ -32,8 +33,9 @@ class TagCreateCommand {
             .then(argument("description", StringArgumentType.string())
                 .then(argument("value", StringArgumentType.greedyString())
                     .executes(context -> {
-                      Database database = context.getSource().getContext().getDatabase();
-                      MessageSender sender = context.getSource().getMessageSender();
+                      CommandSource commandSource = context.getSource();
+                      Database database = commandSource.getContext().getDatabase();
+                      MessageSender sender = commandSource.getMessageSender();
                       String name = context.getArgument("name", String.class);
                       String description = context.getArgument("description", String.class);
                       String value = context.getArgument("value", String.class);
@@ -42,14 +44,14 @@ class TagCreateCommand {
                           .keyword(name)
                           .description(description)
                           .value(value)
-                          .creator(context.getSource().getUser().getIdLong())
+                          .creator(commandSource.getUser().getIdLong())
                           .build();
 
                       database.getTagDao().addOrUpdate(tag);
 
                       sender.sendMessage(
                           SimpleMessage.success("Added the tag " + name),
-                          context.getSource().getChannel()
+                          commandSource.getChannel()
                       );
 
                       return 0;
