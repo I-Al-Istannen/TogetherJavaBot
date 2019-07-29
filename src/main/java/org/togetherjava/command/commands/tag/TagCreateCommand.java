@@ -24,6 +24,10 @@ class TagCreateCommand {
    */
   LiteralCommandNode<CommandSource> getCommand() {
     return literal("add")
+        .shortDescription("Adds a tag or modifies an existing")
+        .longDescription(
+            "Adds a new tag or modifies an existing. Quoted strings are allowed."
+        )
         .then(argument("name", StringArgumentType.string())
             .then(argument("description", StringArgumentType.string())
                 .then(argument("value", StringArgumentType.greedyString())

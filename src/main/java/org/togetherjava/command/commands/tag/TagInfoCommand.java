@@ -25,6 +25,8 @@ class TagInfoCommand {
    */
   LiteralCommandNode<CommandSource> getCommand() {
     return literal("info")
+        .shortDescription("Returns information about a tag")
+        .longDescription("Lists a tag's value, description and creator.")
         .then(argument("name", greedyString())
             .executes(context -> {
               String keyword = context.getArgument("name", String.class);

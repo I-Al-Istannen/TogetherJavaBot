@@ -23,6 +23,10 @@ class TagListCommand {
    */
   LiteralCommandNode<CommandSource> getCommand() {
     return literal("list")
+        .shortDescription("Lists all tags")
+        .longDescription(
+            "Lists all tags and their aliases. The tags are bold and their aliases follow."
+        )
         .executes(context -> {
           CommandSource commandSource = context.getSource();
           MessageSender sender = commandSource.getMessageSender();
