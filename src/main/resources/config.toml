@@ -42,4 +42,4 @@
 
 [permissions]
   # The admin, probably
-  id_328235363099213824 = ["tag.create", "tag.delete"]
+  # id_328235363099213824 = ["tag.create", "tag.delete"]
