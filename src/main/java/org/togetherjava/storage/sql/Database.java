@@ -6,6 +6,7 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.sqlite.SQLiteDataSource;
+import org.togetherjava.storage.dao.jooq.dao.TagDao;
 
 /**
  * The main database class.
@@ -13,6 +14,7 @@ import org.sqlite.SQLiteDataSource;
 public class Database {
 
   private final DSLContext dslContext;
+  private final TagDao tagDao;
 
   /**
    * Creates a new database.
@@ -31,6 +33,7 @@ public class Database {
     flyway.migrate();
 
     this.dslContext = DSL.using(dataSource.getConnection(), SQLDialect.SQLITE);
+    this.tagDao = new TagDao(dslContext);
   }
 
   /**
@@ -40,5 +43,14 @@ public class Database {
    */
   public DSLContext getDslContext() {
     return dslContext;
+  }
+
+  /**
+   * Returns the tag DAO.
+   *
+   * @return the tag dao
+   */
+  public TagDao getTagDao() {
+    return tagDao;
   }
 }
