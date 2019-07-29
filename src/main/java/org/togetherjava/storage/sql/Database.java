@@ -1,10 +1,10 @@
 package org.togetherjava.storage.sql;
 
+import org.flywaydb.core.Flyway;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
 import org.sqlite.SQLiteDataSource;
 import org.togetherjava.storage.dao.TagDao;
-import org.togetherjava.util.IOStreamUtil;
 
 public class Database {
 
@@ -15,13 +15,12 @@ public class Database {
     dataSource.setUrl(jdbcUrl);
     dataSource.setEnforceForeignKeys(true);
 
-    this.jdbi = Jdbi.create(dataSource).installPlugin(new SqlObjectPlugin());
+    Flyway flyway = Flyway.configure()
+        .dataSource(dataSource)
+        .load();
+    flyway.migrate();
 
-    jdbi.useHandle(handle ->
-        handle.createScript(
-            IOStreamUtil.readToString(IOStreamUtil.resource("/db/setup.sql"))
-        ).execute()
-    );
+    this.jdbi = Jdbi.create(dataSource).installPlugin(new SqlObjectPlugin());
   }
 
   /**
