@@ -1,16 +1,26 @@
 package org.togetherjava.storage.sql;
 
+import java.sql.SQLException;
 import org.flywaydb.core.Flyway;
-import org.jdbi.v3.core.Jdbi;
-import org.jdbi.v3.sqlobject.SqlObjectPlugin;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 import org.sqlite.SQLiteDataSource;
-import org.togetherjava.storage.dao.TagDao;
 
+/**
+ * The main database class.
+ */
 public class Database {
 
-  private Jdbi jdbi;
+  private final DSLContext dslContext;
 
-  public Database(String jdbcUrl) {
+  /**
+   * Creates a new database.
+   *
+   * @param jdbcUrl the url to the database
+   * @throws SQLException if no connection could be established
+   */
+  public Database(String jdbcUrl) throws SQLException {
     SQLiteDataSource dataSource = new SQLiteDataSource();
     dataSource.setUrl(jdbcUrl);
     dataSource.setEnforceForeignKeys(true);
@@ -20,15 +30,15 @@ public class Database {
         .load();
     flyway.migrate();
 
-    this.jdbi = Jdbi.create(dataSource).installPlugin(new SqlObjectPlugin());
+    this.dslContext = DSL.using(dataSource.getConnection(), SQLDialect.SQLITE);
   }
 
   /**
-   * Returns the tag dao.
+   * Returns the database dsl context.
    *
-   * @return the creates {@link TagDao} class
+   * @return the database dsl context
    */
-  public TagDao getTagDao() {
-    return jdbi.onDemand(TagDao.class);
+  public DSLContext getDslContext() {
+    return dslContext;
   }
 }

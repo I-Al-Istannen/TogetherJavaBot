@@ -27,7 +27,7 @@
     <appender-ref ref="FILE"/>
   </appender>
 
-  <root level="debug">
+  <root level="info">
     <appender-ref ref="CONSOLE"/>
   </root>
 </configuration>

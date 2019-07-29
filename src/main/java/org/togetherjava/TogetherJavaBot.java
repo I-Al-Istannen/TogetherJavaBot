@@ -1,6 +1,7 @@
 package org.togetherjava;
 
 import com.moandjiezana.toml.Toml;
+import java.sql.SQLException;
 import java.util.Objects;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.core.AccountType;
@@ -34,7 +35,7 @@ public class TogetherJavaBot {
    * @throws InterruptedException if an error occurs while waiting
    * @throws LoginException if the token is invalid or another error prevents login
    */
-  public void start(String token) throws InterruptedException, LoginException {
+  public void start(String token) throws InterruptedException, LoginException, SQLException {
     Transformer<BotMessage, BotMessage> simpleMessageTransformer = Transformer
         .defaultTypeSwitch(
             SimpleMessage.class,

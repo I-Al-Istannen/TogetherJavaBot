@@ -1,5 +1,6 @@
 package org.togetherjava.model;
 
+import java.util.List;
 import org.immutables.value.Value;
 
 @Value.Immutable
@@ -32,4 +33,11 @@ public abstract class MessageTag {
    * @return the id of the tag creator
    */
   public abstract long creator();
+
+  /**
+   * Returns all aliases that are registered to this tag.
+   *
+   * @return all aliases for this tag
+   */
+  public abstract List<String> aliases();
 }

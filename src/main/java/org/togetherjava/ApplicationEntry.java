@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.util.Objects;
 import javax.security.auth.login.LoginException;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ public class ApplicationEntry {
 
     try {
       new TogetherJavaBot(toml).start(token);
-    } catch (InterruptedException | LoginException e) {
+    } catch (InterruptedException | LoginException | SQLException e) {
       LOGGER.error("An error occurred starting the bot.", e);
       System.exit(2);
     }
