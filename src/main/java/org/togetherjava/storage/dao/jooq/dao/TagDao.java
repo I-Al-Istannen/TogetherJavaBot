@@ -117,6 +117,17 @@ public class TagDao {
     });
   }
 
+  /**
+   * Deletes a tag.
+   *
+   * @param tag the tag to delete
+   */
+  public void deleteTag(MessageTag tag) {
+    dslContext.deleteFrom(TAGS)
+        .where(TAGS.KEYWORD.eq(tag.keyword()))
+        .execute();
+  }
+
   private void updateAliases(MessageTag tag, DSLContext context) {
     context.deleteFrom(TAGALIASES)
         .where(TAGALIASES.TARGET.eq(tag.keyword()))
