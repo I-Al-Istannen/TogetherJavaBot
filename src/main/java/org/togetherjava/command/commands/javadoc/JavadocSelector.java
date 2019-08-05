@@ -141,23 +141,32 @@ public class JavadocSelector {
   }
 
   private boolean hasSameParameters(Invocable invocable) {
-    List<String> methodParameters = invocable.getParameters().stream()
-        .map(Parameter::getType)
-        .map(JavadocElement::getSimpleName)
-        .collect(Collectors.toList());
+    List<Parameter> parameters = invocable.getParameters();
 
-    return methodParameters.equals(parameterTypes);
+    // Differing parameter count
+    if (parameters.size() != parameterTypes.size()) {
+      return false;
+    }
+
+    for (int i = 0; i < parameters.size(); i++) {
+      Type parameter = parameters.get(i).getType();
+
+      String requestedParameter = parameterTypes.get(i);
+      boolean matchesFullyQualified = requestedParameter.equals(parameter.getFullyQualifiedName());
+      boolean matchesSimpleName = requestedParameter.equals(parameter.getSimpleName());
+
+      if (!matchesFullyQualified && !matchesSimpleName) {
+        return false;
+      }
+    }
+
+    return false;
   }
 
   private boolean hasSameParametersFuzzy(Invocable invocable) {
-    List<String> methodParameters = invocable.getParameters().stream()
+    List<JavadocElement> methodParameters = invocable.getParameters().stream()
         .map(Parameter::getType)
-        .map(JavadocElement::getSimpleName)
         .collect(Collectors.toList());
-
-    if (methodParameters.equals(parameterTypes)) {
-      return true;
-    }
 
     // Ensure they have the same amount as our query
     if (methodParameters.size() != parameterTypes.size()) {
@@ -165,11 +174,18 @@ public class JavadocSelector {
     }
 
     for (int i = 0; i < methodParameters.size(); i++) {
-      String actualParameter = methodParameters.get(i);
-      String supplierParameter = parameterTypes.get(i);
+      JavadocElement actualParameter = methodParameters.get(i);
+      String supplierParameter = parameterTypes.get(i).toLowerCase();
 
       // allow case insensitive prefix matches (e.g. "fun" for "Function"
-      if (!actualParameter.toLowerCase().startsWith(supplierParameter.toLowerCase())) {
+      boolean simpleFuzzyMatch = actualParameter.getSimpleName()
+          .toLowerCase()
+          .startsWith(supplierParameter);
+      boolean fullyFuzzyMatch = actualParameter.getFullyQualifiedName()
+          .toLowerCase()
+          .startsWith(supplierParameter);
+
+      if (!simpleFuzzyMatch && !fullyFuzzyMatch) {
         return false;
       }
     }
