@@ -26,6 +26,15 @@ public class JavadocMessageFormatter {
    * Creates a new javadoc message formatter.
    */
   public JavadocMessageFormatter() {
+    this(new JavadocDescriptionFormatter());
+  }
+
+  /**
+   * Creates a new javadoc message formatter.
+   *
+   * @param descriptionFormatter the description formatter
+   */
+  public JavadocMessageFormatter(Formatter descriptionFormatter) {
     this.formatters = new ArrayList<>();
 
     formatters.add(Formatter.of(
@@ -108,7 +117,7 @@ public class JavadocMessageFormatter {
             .setFooter("Tip: Click the declaration to go to the online javadoc", null)
     ));
 
-    formatters.add(new JavadocDescriptionFormatter());
+    formatters.add(descriptionFormatter);
   }
 
   private BiConsumer<ComplexMessage, JavadocElement> setColorAndImage(Color color, String url) {
@@ -141,7 +150,7 @@ public class JavadocMessageFormatter {
   /**
    * A message formatter.
    */
-  interface Formatter {
+  public interface Formatter {
 
     /**
      * Returns whether the formatter can handle the element.

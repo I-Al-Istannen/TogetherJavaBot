@@ -18,11 +18,11 @@ import org.togetherjava.util.StringUtils;
 /**
  * Formats the description with the javadoc content.
  */
-class JavadocDescriptionFormatter implements Formatter {
+public class JavadocDescriptionFormatter implements Formatter {
 
   private HtmlMarkdownConverter htmlMarkdownConverter;
 
-  JavadocDescriptionFormatter() {
+  public JavadocDescriptionFormatter() {
     htmlMarkdownConverter = new HtmlMarkdownConverter();
   }
 
@@ -56,6 +56,8 @@ class JavadocDescriptionFormatter implements Formatter {
     String description = StringUtils
         .trimToSize(descriptionMarkdown.toString(), MessageEmbed.TEXT_MAX_LENGTH);
 
+    description = adjustDescription(description);
+
     embedBuilder.setDescription(description);
 
     for (Field field : blockTagFields) {
@@ -63,11 +65,34 @@ class JavadocDescriptionFormatter implements Formatter {
     }
   }
 
-  private void convertHtml(StringBuilder converted, HtmlTag child) {
+  /**
+   * Adjust the description right before it is submitted to the message.
+   *
+   * @param description the description
+   * @return the final description
+   * @implNote the default implementation is the identity function
+   */
+  protected String adjustDescription(String description) {
+    return description;
+  }
+
+  /**
+   * Converts an html tag to a string and appends it to converted.
+   *
+   * @param converted the result
+   * @param child the input tag
+   */
+  protected void convertHtml(StringBuilder converted, HtmlTag child) {
     converted.append(htmlMarkdownConverter.convert(child.getHtml()));
   }
 
-  private Field convertToField(BlockTag tag) {
+  /**
+   * Converts a block tag to a field.
+   *
+   * @param tag the block tag
+   * @return the resulting field
+   */
+  protected Field convertToField(BlockTag tag) {
     String name = htmlMarkdownConverter.convert(tag.getName().getHtml());
     String value = htmlMarkdownConverter.convert(tag.getValue().getHtml());
 

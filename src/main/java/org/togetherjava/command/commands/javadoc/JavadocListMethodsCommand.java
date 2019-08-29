@@ -16,6 +16,7 @@ import java.util.List;
 import org.togetherjava.autodiscovery.IgnoreAutoDiscovery;
 import org.togetherjava.command.CommandSource;
 import org.togetherjava.command.TJCommand;
+import org.togetherjava.command.commands.javadoc.formatting.JavadocDescriptionFormatter;
 import org.togetherjava.command.commands.javadoc.formatting.JavadocMessageFormatter;
 import org.togetherjava.command.commands.javadoc.formatting.JavadocMessageSender;
 import org.togetherjava.command.exceptions.CommandException;
@@ -37,7 +38,8 @@ class JavadocListMethodsCommand implements TJCommand {
 
   JavadocListMethodsCommand(DocsApi javadocApi) {
     this.javadocApi = javadocApi;
-    javadocMessageSender = new JavadocMessageSender(new JavadocMessageFormatter());
+    javadocMessageSender = new JavadocMessageSender(new JavadocMessageFormatter(
+        new JavadocDescriptionFormatter()));
   }
 
   @Override

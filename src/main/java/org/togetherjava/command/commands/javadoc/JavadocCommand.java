@@ -11,6 +11,7 @@ import de.ialistannen.htmljavadocparser.model.properties.JavadocElement;
 import java.util.List;
 import org.togetherjava.command.CommandSource;
 import org.togetherjava.command.TJCommand;
+import org.togetherjava.command.commands.javadoc.formatting.JavadocDescriptionFormatter;
 import org.togetherjava.command.commands.javadoc.formatting.JavadocMessageFormatter;
 import org.togetherjava.command.commands.javadoc.formatting.JavadocMessageSender;
 import org.togetherjava.command.exceptions.CommandException;
@@ -26,7 +27,8 @@ public class JavadocCommand implements TJCommand {
 
   public JavadocCommand(Toml config) {
     this.javadocApi = new DocsApi(config);
-    this.javadocMessageSender = new JavadocMessageSender(new JavadocMessageFormatter());
+    this.javadocMessageSender = new JavadocMessageSender(new JavadocMessageFormatter(
+        new JavadocDescriptionFormatter()));
   }
 
   @Override
@@ -65,6 +67,9 @@ public class JavadocCommand implements TJCommand {
         )
         .then(
             new JavadocListClassesInPackageCommand(javadocApi).getCommand(dispatcher)
+        )
+        .then(
+            new ShortDocCommand(javadocApi).getCommand(dispatcher)
         )
         .build();
   }
