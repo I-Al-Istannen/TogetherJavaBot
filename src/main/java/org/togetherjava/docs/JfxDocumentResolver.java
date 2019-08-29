@@ -1,4 +1,4 @@
-package org.togetherjava.command.commands.javadoc;
+package org.togetherjava.docs;
 
 import de.ialistannen.htmljavadocparser.resolving.DocumentResolver;
 import de.ialistannen.htmljavadocparser.resolving.UrlDocumentResolver;
@@ -14,7 +14,7 @@ class JfxDocumentResolver extends UrlDocumentResolver {
    *
    * @param baseUrl the base url
    */
-  public JfxDocumentResolver(String baseUrl) {
+  JfxDocumentResolver(String baseUrl) {
     super(baseUrl);
   }
 

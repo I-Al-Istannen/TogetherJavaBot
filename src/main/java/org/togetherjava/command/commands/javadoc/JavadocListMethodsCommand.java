@@ -6,7 +6,6 @@ import static org.togetherjava.command.CommandGenericHelper.literal;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import de.ialistannen.htmljavadocparser.JavadocApi;
 import de.ialistannen.htmljavadocparser.model.properties.Invocable;
 import de.ialistannen.htmljavadocparser.model.properties.JavadocElement;
 import de.ialistannen.htmljavadocparser.model.types.JavadocClass;
@@ -17,7 +16,10 @@ import java.util.List;
 import org.togetherjava.autodiscovery.IgnoreAutoDiscovery;
 import org.togetherjava.command.CommandSource;
 import org.togetherjava.command.TJCommand;
+import org.togetherjava.command.commands.javadoc.formatting.JavadocMessageFormatter;
+import org.togetherjava.command.commands.javadoc.formatting.JavadocMessageSender;
 import org.togetherjava.command.exceptions.CommandException;
+import org.togetherjava.docs.DocsApi;
 import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.PaginatedMessage;
 import org.togetherjava.messaging.SimpleMessage;
@@ -29,10 +31,13 @@ import org.togetherjava.reactions.ReactionListener;
 @IgnoreAutoDiscovery
 class JavadocListMethodsCommand implements TJCommand {
 
-  private JavadocApi javadocApi;
+  private final DocsApi javadocApi;
+  private final JavadocMessageSender javadocMessageSender;
 
-  JavadocListMethodsCommand(JavadocApi javadocApi) {
+
+  JavadocListMethodsCommand(DocsApi javadocApi) {
     this.javadocApi = javadocApi;
+    javadocMessageSender = new JavadocMessageSender(new JavadocMessageFormatter());
   }
 
   @Override
@@ -48,10 +53,11 @@ class JavadocListMethodsCommand implements TJCommand {
 
                   JavadocSelector selector = JavadocSelector.fromString(typeName);
 
-                  List<? extends JavadocElement> types = selector.select(javadocApi);
+                  List<? extends JavadocElement> types = javadocApi.find(selector);
 
                   if (types.size() > 1) {
-                    return JavadocCommand.sendMultipleFoundError(commandSource, types);
+                    javadocMessageSender.sendMultipleFoundError(commandSource, types);
+                    return 0;
                   }
 
                   if (types.isEmpty()) {

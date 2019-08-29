@@ -6,7 +6,6 @@ import static org.togetherjava.command.CommandGenericHelper.literal;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import de.ialistannen.htmljavadocparser.JavadocApi;
 import de.ialistannen.htmljavadocparser.model.JavadocPackage;
 import de.ialistannen.htmljavadocparser.model.types.Type;
 import java.util.List;
@@ -14,6 +13,7 @@ import org.togetherjava.autodiscovery.IgnoreAutoDiscovery;
 import org.togetherjava.command.CommandSource;
 import org.togetherjava.command.TJCommand;
 import org.togetherjava.command.exceptions.CommandException;
+import org.togetherjava.docs.DocsApi;
 import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.PaginatedMessage;
 import org.togetherjava.reactions.ReactionListener;
@@ -21,10 +21,10 @@ import org.togetherjava.reactions.ReactionListener;
 @IgnoreAutoDiscovery
 class JavadocListClassesInPackageCommand implements TJCommand {
 
-  private JavadocApi javadocApi;
+  private DocsApi docsApi;
 
-  JavadocListClassesInPackageCommand(JavadocApi javadocApi) {
-    this.javadocApi = javadocApi;
+  JavadocListClassesInPackageCommand(DocsApi javadocApi) {
+    this.docsApi = javadocApi;
   }
 
   @Override
@@ -38,7 +38,8 @@ class JavadocListClassesInPackageCommand implements TJCommand {
                   CommandSource source = context.getSource();
                   String packageName = context.getArgument("package name", String.class);
 
-                  JavadocPackage javadocPackage = javadocApi.getPackage(packageName)
+                  JavadocPackage javadocPackage = docsApi.getUnderlyingJavadocApi()
+                      .getPackage(packageName)
                       .orElseThrow(() -> new CommandException("Package not found :("));
 
                   List<Type> types = javadocPackage.getContainedTypes();
