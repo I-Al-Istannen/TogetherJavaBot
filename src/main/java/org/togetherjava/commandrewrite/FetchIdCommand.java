@@ -35,6 +35,7 @@ public class FetchIdCommand extends CommandNode<CommandContext> {
             .getGuild()
             .getTextChannelsByName(context.shift(greedyPhrase()), true);
         formatAndSendList(context, channels);
+        break;
       case "user":
         List<Member> members = context.getRequestContext()
             .getGuild()

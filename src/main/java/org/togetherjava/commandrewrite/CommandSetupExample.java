@@ -11,7 +11,6 @@ import de.ialistannen.commandprocrastination.parsing.ParseException;
 import javax.annotation.Nonnull;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.togetherjava.autodiscovery.CommandClasses;
 import org.togetherjava.messaging.SimpleMessage;
 import org.togetherjava.messaging.sending.MessageSender;
 
@@ -23,9 +22,7 @@ public class CommandSetupExample extends ListenerAdapter {
   public CommandSetupExample(Toml config, MessageSender sender) {
     this.sender = sender;
 
-    CommandNode<CommandContext> rootCommand = new CommandDiscovery(
-        new CommandClasses()
-    ).findCommands();
+    CommandNode<CommandContext> rootCommand = new CommandDiscovery().findCommands();
     CommandFinder<CommandContext> finder = new CommandFinder<>(rootCommand);
 
     this.executor = new JdaExecutor(finder, config, sender);
