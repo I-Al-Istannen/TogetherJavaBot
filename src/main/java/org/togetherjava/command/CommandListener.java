@@ -1,4 +1,4 @@
-package org.togetherjava.commandrewrite;
+package org.togetherjava.command;
 
 import com.moandjiezana.toml.Toml;
 import de.ialistannen.commandprocrastination.autodiscovery.CommandDiscovery;
@@ -11,7 +11,7 @@ import de.ialistannen.commandprocrastination.parsing.ParseException;
 import javax.annotation.Nonnull;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.togetherjava.commandrewrite.CommandContext.JdaRequestContext;
+import org.togetherjava.command.CommandContext.JdaRequestContext;
 import org.togetherjava.messaging.SimpleMessage;
 import org.togetherjava.messaging.sending.MessageSender;
 import org.togetherjava.reactions.ReactionListener;
@@ -20,12 +20,12 @@ import org.togetherjava.storage.sql.Database;
 /**
  * A command listener for the new command system.
  */
-public class NewCommandListener extends ListenerAdapter {
+public class CommandListener extends ListenerAdapter {
 
   private final MessageSender sender;
   private JdaExecutor executor;
 
-  public NewCommandListener(Toml config, MessageSender sender, ReactionListener reactionListener,
+  public CommandListener(Toml config, MessageSender sender, ReactionListener reactionListener,
       Database database) {
     this.sender = sender;
 

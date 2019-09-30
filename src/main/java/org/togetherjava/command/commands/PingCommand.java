@@ -7,7 +7,7 @@ import de.ialistannen.commandprocrastination.command.execution.AbnormalCommandRe
 import de.ialistannen.commandprocrastination.command.tree.CommandNode;
 import de.ialistannen.commandprocrastination.command.tree.data.DefaultDataKey;
 import de.ialistannen.commandprocrastination.parsing.SuccessParser;
-import org.togetherjava.commandrewrite.CommandContext;
+import org.togetherjava.command.CommandContext;
 import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.SimpleMessage;
 

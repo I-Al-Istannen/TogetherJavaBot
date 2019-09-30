@@ -7,7 +7,7 @@ import de.ialistannen.commandprocrastination.command.Command;
 import de.ialistannen.commandprocrastination.command.tree.CommandNode;
 import de.ialistannen.commandprocrastination.command.tree.data.DefaultDataKey;
 import de.ialistannen.commandprocrastination.parsing.SuccessParser;
-import org.togetherjava.commandrewrite.CommandContext;
+import org.togetherjava.command.CommandContext;
 
 @ActiveCommand(name = "prefixed-base")
 public class PrefixedBaseCommand extends CommandNode<CommandContext> {

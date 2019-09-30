@@ -1,4 +1,4 @@
-package org.togetherjava.commandrewrite;
+package org.togetherjava.command;
 
 import static de.ialistannen.commandprocrastination.parsing.defaults.StringParsers.literal;
 
@@ -6,7 +6,7 @@ import com.moandjiezana.toml.Toml;
 import de.ialistannen.commandprocrastination.command.execution.CommandExecutor;
 import de.ialistannen.commandprocrastination.command.tree.CommandFinder;
 import de.ialistannen.commandprocrastination.parsing.SuccessParser;
-import org.togetherjava.commandrewrite.CommandContext.JdaRequestContext;
+import org.togetherjava.command.CommandContext.JdaRequestContext;
 import org.togetherjava.messaging.sending.MessageSender;
 import org.togetherjava.reactions.ReactionListener;
 import org.togetherjava.storage.sql.Database;

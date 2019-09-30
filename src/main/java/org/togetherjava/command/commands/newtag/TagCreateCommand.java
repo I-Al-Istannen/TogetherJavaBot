@@ -9,7 +9,7 @@ import de.ialistannen.commandprocrastination.command.tree.CommandNode;
 import de.ialistannen.commandprocrastination.command.tree.data.DefaultDataKey;
 import de.ialistannen.commandprocrastination.parsing.ParseException;
 import de.ialistannen.commandprocrastination.parsing.SuccessParser;
-import org.togetherjava.commandrewrite.CommandContext;
+import org.togetherjava.command.CommandContext;
 import org.togetherjava.messaging.SimpleMessage;
 import org.togetherjava.model.ImmutableMessageTag;
 import org.togetherjava.model.MessageTag;

@@ -8,7 +8,7 @@ import de.ialistannen.commandprocrastination.parsing.SuccessParser;
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.togetherjava.commandrewrite.CommandContext;
+import org.togetherjava.command.CommandContext;
 import org.togetherjava.messaging.SimpleMessage;
 import org.togetherjava.model.MessageTag;
 

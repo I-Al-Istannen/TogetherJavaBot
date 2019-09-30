@@ -9,11 +9,11 @@ import de.ialistannen.commandprocrastination.parsing.ParseException;
 import de.ialistannen.commandprocrastination.parsing.SuccessParser;
 import de.ialistannen.htmljavadocparser.model.properties.JavadocElement;
 import java.util.List;
+import org.togetherjava.command.CommandContext;
 import org.togetherjava.command.commands.PrefixedBaseCommand;
 import org.togetherjava.command.commands.javadoc.formatting.JavadocDescriptionFormatter;
 import org.togetherjava.command.commands.javadoc.formatting.JavadocMessageFormatter;
 import org.togetherjava.command.commands.javadoc.formatting.JavadocMessageSender;
-import org.togetherjava.commandrewrite.CommandContext;
 import org.togetherjava.docs.DocsApi;
 
 @ActiveCommand(name = "javadoc-base", parentClass = PrefixedBaseCommand.class)

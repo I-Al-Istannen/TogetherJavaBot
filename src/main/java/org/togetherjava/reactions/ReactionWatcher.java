@@ -2,7 +2,7 @@ package org.togetherjava.reactions;
 
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
-import org.togetherjava.commandrewrite.CommandContext;
+import org.togetherjava.command.CommandContext;
 
 public interface ReactionWatcher {
 

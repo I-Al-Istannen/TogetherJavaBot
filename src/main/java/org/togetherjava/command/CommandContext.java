@@ -1,4 +1,4 @@
-package org.togetherjava.commandrewrite;
+package org.togetherjava.command;
 
 import com.moandjiezana.toml.Toml;
 import de.ialistannen.commandprocrastination.context.GlobalContext;

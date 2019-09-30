@@ -8,8 +8,8 @@ import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Message;
-import org.togetherjava.commandrewrite.CommandContext;
-import org.togetherjava.commandrewrite.NewCommandListener;
+import org.togetherjava.command.CommandContext;
+import org.togetherjava.command.CommandListener;
 import org.togetherjava.messaging.BotMessage;
 import org.togetherjava.messaging.ComplexMessage;
 import org.togetherjava.messaging.SimpleMessage;
@@ -69,7 +69,7 @@ public class TogetherJavaBot {
         .setToken(token)
         .addEventListeners(reactionListener)
         .addEventListeners(
-            new NewCommandListener(config, messageSender, reactionListener, database)
+            new CommandListener(config, messageSender, reactionListener, database)
         )
         .build()
         .awaitReady();
