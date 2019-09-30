@@ -2,9 +2,9 @@ package org.togetherjava.reactions;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.togetherjava.autodiscovery.ClassDiscovery;
 import org.togetherjava.reactions.ReactionWatcher.ReactionResult;
 import org.togetherjava.util.Context;

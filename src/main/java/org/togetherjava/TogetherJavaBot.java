@@ -4,11 +4,12 @@ import com.moandjiezana.toml.Toml;
 import java.sql.SQLException;
 import java.util.Objects;
 import javax.security.auth.login.LoginException;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Message;
 import org.togetherjava.command.CommandListener;
+import org.togetherjava.commandrewrite.CommandSetupExample;
 import org.togetherjava.messaging.BotMessage;
 import org.togetherjava.messaging.ComplexMessage;
 import org.togetherjava.messaging.SimpleMessage;
@@ -74,8 +75,8 @@ public class TogetherJavaBot {
 
     jda = new JDABuilder(AccountType.BOT)
         .setToken(token)
-        .addEventListener(commandListener)
-        .addEventListener(reactionListener)
+        .addEventListeners(commandListener, reactionListener)
+        .addEventListeners(new CommandSetupExample(config, messageSender))
         .build()
         .awaitReady();
   }

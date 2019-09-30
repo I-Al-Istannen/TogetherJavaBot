@@ -1,8 +1,8 @@
 package org.togetherjava.messaging;
 
 import java.time.Duration;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.Message;
 import org.togetherjava.messaging.transforming.Transformer;
 
 /**

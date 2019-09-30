@@ -1,6 +1,6 @@
 package org.togetherjava.messaging.transforming;
 
-import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.api.EmbedBuilder;
 import org.togetherjava.util.BuildProperties;
 
 /**

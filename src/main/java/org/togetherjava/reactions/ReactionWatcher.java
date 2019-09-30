@@ -1,7 +1,7 @@
 package org.togetherjava.reactions;
 
-import net.dv8tion.jda.core.entities.MessageReaction;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.api.entities.MessageReaction;
+import net.dv8tion.jda.api.entities.User;
 import org.togetherjava.util.Context;
 
 public interface ReactionWatcher {

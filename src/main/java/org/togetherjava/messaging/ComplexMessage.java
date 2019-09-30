@@ -1,8 +1,8 @@
 package org.togetherjava.messaging;
 
 import java.util.function.Consumer;
-import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.MessageBuilder;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
 
 public class ComplexMessage extends BotMessage<ComplexMessage> {
 

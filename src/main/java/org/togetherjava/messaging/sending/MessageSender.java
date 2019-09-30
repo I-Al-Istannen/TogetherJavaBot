@@ -1,6 +1,6 @@
 package org.togetherjava.messaging.sending;
 
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import org.togetherjava.messaging.BotMessage;
 
 @FunctionalInterface
