@@ -1,53 +1,51 @@
 package org.togetherjava.command.commands;
 
-import static org.togetherjava.command.CommandGenericHelper.literal;
+import static de.ialistannen.commandprocrastination.parsing.defaults.StringParsers.literal;
 
-import com.mojang.brigadier.Command;
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.tree.LiteralCommandNode;
-import org.togetherjava.command.CommandSource;
-import org.togetherjava.command.TJCommand;
+import de.ialistannen.commandprocrastination.autodiscovery.ActiveCommand;
+import de.ialistannen.commandprocrastination.command.execution.AbnormalCommandResultException;
+import de.ialistannen.commandprocrastination.command.tree.CommandNode;
+import de.ialistannen.commandprocrastination.command.tree.data.DefaultDataKey;
+import de.ialistannen.commandprocrastination.parsing.SuccessParser;
+import org.togetherjava.commandrewrite.CommandContext;
 import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.SimpleMessage;
 
-public class PingCommand implements TJCommand {
+@ActiveCommand(name = "ping", parentClass = PrefixedBaseCommand.class)
+public class PingCommand extends CommandNode<CommandContext> {
 
-  @Override
-  public LiteralCommandNode<CommandSource> getCommand(CommandDispatcher<CommandSource> dispatcher) {
-    return literal("ping")
-        .shortDescription("Pongs! you, if the bot is online.")
-        .then(
-            literal("error")
-                .shortDescription("Displays a pong with the 'error' category.")
-                .executes(sendMessage(MessageCategory.ERROR))
-        )
-        .then(
-            literal("information")
-                .shortDescription("Displays a pong with the 'information' category.")
-                .executes(sendMessage(MessageCategory.INFORMATION))
-        )
-        .then(
-            literal("success")
-                .shortDescription("Displays a pong with the 'success' category.")
-                .executes(sendMessage(MessageCategory.SUCCESS))
-        )
-        .then(
-            literal("none")
-                .shortDescription("Displays a pong with the 'none' category.")
-                .executes(sendMessage(MessageCategory.NONE))
-        )
-        .build();
+  public PingCommand() {
+    super(SuccessParser.wrapping(literal("ping")));
+    setCommand(context -> {
+      throw AbnormalCommandResultException.showUsage();
+    });
+
+    addSubCommand()
+        .head("error")
+        .data(DefaultDataKey.SHORT_DESCRIPTION, "A message with error level")
+        .executes(context -> sendMessage(context, MessageCategory.ERROR))
+        .finish();
+    addSubCommand()
+        .head("information")
+        .data(DefaultDataKey.SHORT_DESCRIPTION, "A message with information level")
+        .executes(context -> sendMessage(context, MessageCategory.INFORMATION))
+        .finish();
+    addSubCommand()
+        .head("success")
+        .data(DefaultDataKey.SHORT_DESCRIPTION, "A message with success level")
+        .executes(context -> sendMessage(context, MessageCategory.SUCCESS))
+        .finish();
+    addSubCommand()
+        .head("none")
+        .data(DefaultDataKey.SHORT_DESCRIPTION, "A message with no level")
+        .executes(context -> sendMessage(context, MessageCategory.NONE))
+        .finish();
   }
 
-  private static Command<CommandSource> sendMessage(MessageCategory category) {
-    return context -> sendMessage(category, context);
-  }
-
-  private static int sendMessage(MessageCategory category, CommandContext<CommandSource> context) {
-    CommandSource source = context.getSource();
-    source.getMessageSender()
-        .sendMessage(new SimpleMessage(category, "Pong!"), source.getChannel());
-    return 0;
+  private void sendMessage(CommandContext context, MessageCategory category) {
+    context.getMessageSender().sendMessage(
+        new SimpleMessage(category, "Pong!"),
+        context.getRequestContext().getChannel()
+    );
   }
 }

@@ -84,7 +84,7 @@ public class CommandContext extends GlobalContext {
     private Guild guild;
     private MessageChannel channel;
 
-    public JdaRequestContext(Message message, User user, Guild guild) {
+    JdaRequestContext(Message message, User user, Guild guild) {
       this.message = message;
       this.user = user;
       this.guild = guild;
