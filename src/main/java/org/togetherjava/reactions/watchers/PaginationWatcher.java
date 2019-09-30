@@ -12,8 +12,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
 import org.togetherjava.autodiscovery.IgnoreAutoDiscovery;
+import org.togetherjava.commandrewrite.CommandContext;
 import org.togetherjava.reactions.ReactionWatcher;
-import org.togetherjava.util.Context;
 
 /**
  * A watcher that facilitates pagination.
@@ -69,7 +69,7 @@ public class PaginationWatcher<T> implements ReactionWatcher {
 
   @Override
   public ReactionResult reactionAdded(Long messageId, User user, MessageReaction reactionEmote,
-      Context context) {
+      CommandContext context) {
 
     if (messageId != message.getIdLong() || user.getIdLong() != ownerId) {
       return ReactionResult.DO_NOTHING;
@@ -103,7 +103,7 @@ public class PaginationWatcher<T> implements ReactionWatcher {
 
   @Override
   public ReactionResult reactionRemoved(Long messageId, User user, MessageReaction reactionEmote,
-      Context context) {
+      CommandContext context) {
 
     return ReactionResult.DO_NOTHING;
   }

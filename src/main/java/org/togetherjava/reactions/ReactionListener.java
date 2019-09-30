@@ -6,18 +6,19 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.togetherjava.autodiscovery.ClassDiscovery;
+import org.togetherjava.commandrewrite.CommandContext;
 import org.togetherjava.reactions.ReactionWatcher.ReactionResult;
-import org.togetherjava.util.Context;
 
 /**
  * An event listener that watches for reactions and relays that information to subscribed watchers.
  *
- * <P><strong>You must call {@link #setContext(Context)} before registering this listener.</strong>
+ * <P><strong>You must call {@link #setContext(CommandContext)} before registering this
+ * listener.</strong>
  */
 public class ReactionListener extends ListenerAdapter {
 
   private List<ReactionWatcher> watchers;
-  private Context context;
+  private CommandContext context;
 
   public ReactionListener() {
     this.watchers = new ArrayList<>();
@@ -36,7 +37,7 @@ public class ReactionListener extends ListenerAdapter {
    *
    * @param context the context
    */
-  public void setContext(Context context) {
+  public void setContext(CommandContext context) {
     this.context = context;
   }
 

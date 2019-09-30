@@ -2,7 +2,7 @@ package org.togetherjava.reactions;
 
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
-import org.togetherjava.util.Context;
+import org.togetherjava.commandrewrite.CommandContext;
 
 public interface ReactionWatcher {
 
@@ -15,7 +15,7 @@ public interface ReactionWatcher {
    * @param context the context to use
    */
   ReactionResult reactionAdded(Long messageId, User user, MessageReaction reactionEmote,
-      Context context);
+      CommandContext context);
 
   /**
    * Called when a reaction was removed.
@@ -26,7 +26,7 @@ public interface ReactionWatcher {
    * @param context the context to use
    */
   ReactionResult reactionRemoved(Long messageId, User user, MessageReaction reactionEmote,
-      Context context);
+      CommandContext context);
 
   /**
    * The result of processing a reaction.

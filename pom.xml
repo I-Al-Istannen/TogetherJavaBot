@@ -228,17 +228,15 @@
       </exclusions>
     </dependency>
 
+    <!--    <dependency>-->
+    <!--      <groupId>com.github.I-Al-Istannen</groupId>-->
+    <!--      <artifactId>CommandProcrastinationParent</artifactId>-->
+    <!--      <version>6be9302430</version>-->
+    <!--    </dependency>-->
     <dependency>
       <groupId>de.ialistannen</groupId>
       <artifactId>CommandProcrastination</artifactId>
       <version>1.0-SNAPSHOT</version>
-    </dependency>
-
-    <!--COMMAND PARSER-->
-    <dependency>
-      <groupId>com.github.I-Al-Istannen</groupId>
-      <artifactId>brigadier</artifactId>
-      <version>7c281a0894</version>
     </dependency>
 
     <!--CONFIG LANGUAGE-->

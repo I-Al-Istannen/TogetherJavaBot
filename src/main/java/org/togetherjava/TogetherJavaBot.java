@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Message;
-import org.togetherjava.command.CommandListener;
+import org.togetherjava.commandrewrite.CommandContext;
 import org.togetherjava.commandrewrite.NewCommandListener;
 import org.togetherjava.messaging.BotMessage;
 import org.togetherjava.messaging.ComplexMessage;
@@ -19,7 +19,6 @@ import org.togetherjava.messaging.transforming.EmbedTransformer;
 import org.togetherjava.messaging.transforming.Transformer;
 import org.togetherjava.reactions.ReactionListener;
 import org.togetherjava.storage.sql.Database;
-import org.togetherjava.util.Context;
 
 public class TogetherJavaBot {
 
@@ -60,22 +59,15 @@ public class TogetherJavaBot {
     );
 
     ReactionListener reactionListener = new ReactionListener();
-    CommandListener commandListener = new CommandListener(
-        config.getList("commands.prefixes"),
-        config
-    );
     Database database = new Database(config.getString("database.connection-url"));
 
-    Context context = new Context(
-        messageSender, reactionListener, commandListener, config, database
+    reactionListener.setContext(
+        new CommandContext(null, config, messageSender, reactionListener, database)
     );
-
-    commandListener.setContext(context);
-    reactionListener.setContext(context);
 
     jda = new JDABuilder(AccountType.BOT)
         .setToken(token)
-        .addEventListeners(commandListener, reactionListener)
+        .addEventListeners(reactionListener)
         .addEventListeners(
             new NewCommandListener(config, messageSender, reactionListener, database)
         )
