@@ -9,26 +9,29 @@ import de.ialistannen.commandprocrastination.parsing.SuccessParser;
 import org.togetherjava.commandrewrite.CommandContext.JdaRequestContext;
 import org.togetherjava.messaging.sending.MessageSender;
 import org.togetherjava.reactions.ReactionListener;
+import org.togetherjava.storage.sql.Database;
 
 /**
  * A command executor for JDA.
  */
 class JdaExecutor extends CommandExecutor<CommandContext, JdaRequestContext> {
 
-  private Toml config;
-  private MessageSender sender;
+  private final Toml config;
+  private final MessageSender sender;
   private final ReactionListener reactionListener;
+  private final Database database;
 
   JdaExecutor(CommandFinder<CommandContext> finder, Toml config, MessageSender sender,
-      ReactionListener reactionListener) {
+      ReactionListener reactionListener, Database database) {
     super(finder, SuccessParser.wrapping(literal(" ")));
     this.config = config;
     this.sender = sender;
     this.reactionListener = reactionListener;
+    this.database = database;
   }
 
   @Override
   protected CommandContext createContext(JdaRequestContext requestContext) {
-    return new CommandContext(requestContext, config, sender, reactionListener);
+    return new CommandContext(requestContext, config, sender, reactionListener, database);
   }
 }

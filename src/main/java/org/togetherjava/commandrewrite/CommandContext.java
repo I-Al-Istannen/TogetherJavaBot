@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import org.togetherjava.messaging.sending.MessageSender;
 import org.togetherjava.reactions.ReactionListener;
+import org.togetherjava.storage.sql.Database;
 
 /**
  * The context for commands.
@@ -19,6 +20,7 @@ public class CommandContext extends GlobalContext {
   private MessageSender sender;
   private ReactionListener reactionListener;
   private JdaRequestContext requestContext;
+  private Database database;
 
   /**
    * Creates a new command context.
@@ -27,15 +29,17 @@ public class CommandContext extends GlobalContext {
    * @param config the config
    * @param sender the sender
    * @param reactionListener the reaction listener
+   * @param database the database
    */
   public CommandContext(JdaRequestContext requestContext, Toml config,
       MessageSender sender,
-      ReactionListener reactionListener) {
+      ReactionListener reactionListener, Database database) {
     super(requestContext);
     this.config = config;
     this.sender = sender;
     this.reactionListener = reactionListener;
     this.requestContext = requestContext;
+    this.database = database;
   }
 
   /**
@@ -72,6 +76,15 @@ public class CommandContext extends GlobalContext {
    */
   public JdaRequestContext getRequestContext() {
     return requestContext;
+  }
+
+  /**
+   * Returns the database.
+   *
+   * @return the database
+   */
+  public Database getDatabase() {
+    return database;
   }
 
   /**

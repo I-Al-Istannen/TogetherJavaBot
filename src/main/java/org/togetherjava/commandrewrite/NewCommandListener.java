@@ -15,6 +15,7 @@ import org.togetherjava.commandrewrite.CommandContext.JdaRequestContext;
 import org.togetherjava.messaging.SimpleMessage;
 import org.togetherjava.messaging.sending.MessageSender;
 import org.togetherjava.reactions.ReactionListener;
+import org.togetherjava.storage.sql.Database;
 
 /**
  * A command listener for the new command system.
@@ -24,15 +25,16 @@ public class NewCommandListener extends ListenerAdapter {
   private final MessageSender sender;
   private JdaExecutor executor;
 
-  public NewCommandListener(Toml config, MessageSender sender, ReactionListener reactionListener) {
+  public NewCommandListener(Toml config, MessageSender sender, ReactionListener reactionListener,
+      Database database) {
     this.sender = sender;
 
     CommandNode<CommandContext> rootCommand = new CommandDiscovery().findCommands(
-        new CommandContext(null, config, sender, reactionListener)
+        new CommandContext(null, config, sender, reactionListener, database)
     );
     CommandFinder<CommandContext> finder = new CommandFinder<>(rootCommand);
 
-    this.executor = new JdaExecutor(finder, config, sender, reactionListener);
+    this.executor = new JdaExecutor(finder, config, sender, reactionListener, database);
   }
 
   @Override

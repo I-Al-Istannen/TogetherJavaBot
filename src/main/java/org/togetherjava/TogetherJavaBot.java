@@ -76,7 +76,9 @@ public class TogetherJavaBot {
     jda = new JDABuilder(AccountType.BOT)
         .setToken(token)
         .addEventListeners(commandListener, reactionListener)
-        .addEventListeners(new NewCommandListener(config, messageSender, reactionListener))
+        .addEventListeners(
+            new NewCommandListener(config, messageSender, reactionListener, database)
+        )
         .build()
         .awaitReady();
   }
