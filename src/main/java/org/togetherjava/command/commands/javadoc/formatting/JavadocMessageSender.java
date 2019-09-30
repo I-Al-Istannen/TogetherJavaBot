@@ -5,10 +5,11 @@ import de.ialistannen.htmljavadocparser.model.properties.JavadocElement;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.togetherjava.command.CommandSource;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.ComplexMessage;
 import org.togetherjava.messaging.SimpleMessage;
+import org.togetherjava.messaging.sending.MessageSender;
 
 /**
  * Sends result messages for javadoc queries.
@@ -31,27 +32,31 @@ public class JavadocMessageSender {
    * classes or an error.
    *
    * @param elements the found elements
-   * @param source the command source to send it to
+   * @param sender the message sender
+   * @param channel the channel to send it to
    */
-  public void sendResult(List<? extends JavadocElement> elements, CommandSource source) {
+  public void sendResult(List<? extends JavadocElement> elements, MessageSender sender,
+      MessageChannel channel) {
     if (elements.isEmpty()) {
-      sendNothingFound(source);
+      sendNothingFound(channel, sender);
       return;
     }
     if (elements.size() == 1) {
-      sendSingleJavadoc(source, elements.get(0));
+      sendSingleJavadoc(channel, sender, elements.get(0));
       return;
     }
-    sendMultipleFoundError(source, elements);
+    sendMultipleFoundError(channel, sender, elements);
   }
 
   /**
    * Sends a single javadoc result.
    *
-   * @param source the source
+   * @param channel the channel to send it to
+   * @param sender the message sender
    * @param element the element
    */
-  public void sendSingleJavadoc(CommandSource source, JavadocElement element) {
+  public void sendSingleJavadoc(MessageChannel channel, MessageSender sender,
+      JavadocElement element) {
     ComplexMessage message = new ComplexMessage(MessageCategory.NONE);
     Optional<JavadocComment> javadoc = element.getJavadoc();
     if (javadoc.isEmpty()) {
@@ -61,30 +66,27 @@ public class JavadocMessageSender {
       messageFormatter.format(message, element);
     }
 
-    source.getMessageSender().sendMessage(
-        message, source.getChannel()
-    );
+    sender.sendMessage(message, channel);
   }
 
   /**
    * Sends an error message saying that no types were found.
    *
-   * @param commandSource the command source
+   * @param channel the channel to send it to
+   * @param sender the message sender
    */
-  public void sendNothingFound(CommandSource commandSource) {
-    commandSource.getMessageSender().sendMessage(
-        SimpleMessage.error("Nothing found :("),
-        commandSource.getChannel()
-    );
+  public void sendNothingFound(MessageChannel channel, MessageSender sender) {
+    sender.sendMessage(SimpleMessage.error("Nothing found :("), channel);
   }
 
   /**
    * Sends an error with a list of the found elements.
    *
-   * @param source the command source
+   * @param channel the channel to send it to
+   * @param sender the message sender
    * @param foundElements the found elements
    */
-  public void sendMultipleFoundError(CommandSource source,
+  public void sendMultipleFoundError(MessageChannel channel, MessageSender sender,
       List<? extends JavadocElement> foundElements) {
     String types = foundElements.stream()
         .map(JavadocElement::getFullyQualifiedName)
@@ -96,8 +98,6 @@ public class JavadocMessageSender {
         .editEmbed(eb -> eb.setTitle("I found at least the following types:"))
         .editEmbed(eb -> eb.setDescription(types));
 
-    source.getMessageSender().sendMessage(
-        message, source.getChannel()
-    );
+    sender.sendMessage(message, channel);
   }
 }

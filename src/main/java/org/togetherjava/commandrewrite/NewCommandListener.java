@@ -11,21 +11,28 @@ import de.ialistannen.commandprocrastination.parsing.ParseException;
 import javax.annotation.Nonnull;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.togetherjava.commandrewrite.CommandContext.JdaRequestContext;
 import org.togetherjava.messaging.SimpleMessage;
 import org.togetherjava.messaging.sending.MessageSender;
+import org.togetherjava.reactions.ReactionListener;
 
-public class CommandSetupExample extends ListenerAdapter {
+/**
+ * A command listener for the new command system.
+ */
+public class NewCommandListener extends ListenerAdapter {
 
   private final MessageSender sender;
   private JdaExecutor executor;
 
-  public CommandSetupExample(Toml config, MessageSender sender) {
+  public NewCommandListener(Toml config, MessageSender sender, ReactionListener reactionListener) {
     this.sender = sender;
 
-    CommandNode<CommandContext> rootCommand = new CommandDiscovery().findCommands();
+    CommandNode<CommandContext> rootCommand = new CommandDiscovery().findCommands(
+        new CommandContext(null, config, sender, reactionListener)
+    );
     CommandFinder<CommandContext> finder = new CommandFinder<>(rootCommand);
 
-    this.executor = new JdaExecutor(finder, config, sender);
+    this.executor = new JdaExecutor(finder, config, sender, reactionListener);
   }
 
   @Override

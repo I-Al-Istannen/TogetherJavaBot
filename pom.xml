@@ -26,7 +26,6 @@
           <!--Compile parameter names for jdbi-->
           <compilerArgs>
             <arg>-parameters</arg>
-            <arg>-AtargetPackage=org.togetherjava.autodiscovery</arg>
           </compilerArgs>
 
           <annotationProcessorPaths>

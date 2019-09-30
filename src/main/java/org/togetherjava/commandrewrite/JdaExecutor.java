@@ -5,25 +5,30 @@ import static de.ialistannen.commandprocrastination.parsing.defaults.StringParse
 import com.moandjiezana.toml.Toml;
 import de.ialistannen.commandprocrastination.command.execution.CommandExecutor;
 import de.ialistannen.commandprocrastination.command.tree.CommandFinder;
-import de.ialistannen.commandprocrastination.command.tree.CommandNode;
 import de.ialistannen.commandprocrastination.parsing.SuccessParser;
-import de.ialistannen.commandprocrastination.util.StringReader;
+import org.togetherjava.commandrewrite.CommandContext.JdaRequestContext;
 import org.togetherjava.messaging.sending.MessageSender;
+import org.togetherjava.reactions.ReactionListener;
 
-public class JdaExecutor extends CommandExecutor<CommandContext, JdaRequestContext> {
+/**
+ * A command executor for JDA.
+ */
+class JdaExecutor extends CommandExecutor<CommandContext, JdaRequestContext> {
 
   private Toml config;
   private MessageSender sender;
+  private final ReactionListener reactionListener;
 
-  public JdaExecutor(CommandFinder<CommandContext> finder, Toml config, MessageSender sender) {
+  JdaExecutor(CommandFinder<CommandContext> finder, Toml config, MessageSender sender,
+      ReactionListener reactionListener) {
     super(finder, SuccessParser.wrapping(literal(" ")));
     this.config = config;
     this.sender = sender;
+    this.reactionListener = reactionListener;
   }
 
   @Override
-  protected CommandContext createContext(StringReader stringReader,
-      CommandNode<CommandContext> commandNode, JdaRequestContext requestContext) {
-    return new CommandContext(stringReader, commandNode, config, sender, requestContext);
+  protected CommandContext createContext(JdaRequestContext requestContext) {
+    return new CommandContext(requestContext, config, sender, reactionListener);
   }
 }

@@ -1,81 +1,70 @@
 package org.togetherjava.command.commands;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.getString;
-import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
-import static org.togetherjava.command.CommandGenericHelper.argument;
-import static org.togetherjava.command.CommandGenericHelper.literal;
+import static de.ialistannen.commandprocrastination.parsing.defaults.StringParsers.greedyPhrase;
+import static de.ialistannen.commandprocrastination.parsing.defaults.StringParsers.literal;
+import static de.ialistannen.commandprocrastination.parsing.defaults.StringParsers.word;
 
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.tree.LiteralCommandNode;
+import de.ialistannen.commandprocrastination.autodiscovery.ActiveCommand;
+import de.ialistannen.commandprocrastination.command.tree.CommandNode;
+import de.ialistannen.commandprocrastination.command.tree.data.DefaultDataKey;
+import de.ialistannen.commandprocrastination.parsing.ParseException;
+import de.ialistannen.commandprocrastination.parsing.SuccessParser;
+import java.util.List;
 import java.util.stream.Collectors;
-import org.togetherjava.command.CommandSource;
-import org.togetherjava.command.TJCommand;
+import net.dv8tion.jda.api.entities.IMentionable;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
+import org.togetherjava.commandrewrite.CommandContext;
 import org.togetherjava.messaging.SimpleMessage;
 
-public class FetchIdCommand implements TJCommand {
+@ActiveCommand(name = "fetchId", parentClass = PrefixedBaseCommand.class)
+public class FetchIdCommand extends CommandNode<CommandContext> {
 
-  @Override
-  public LiteralCommandNode<CommandSource> getCommand(CommandDispatcher<CommandSource> dispatcher) {
-    return literal("fetchId")
-        .shortDescription("Retrieves ids for roles and channels.")
-        .longDescription(
-            "Discord internally uses unique ids (called Snowflakes) for identifying channels and"
-                + " roles, even if they are renamed. This command allows you to easily "
-                + "retrieve them."
-        )
-        .then(
-            literal("role")
-                .shortDescription("Returns the id of a role with a given name.")
-                .then(
-                    argument("name", greedyString())
-                        .executes(context -> showRoleId(
-                            getString(context, "name"),
-                            context.getSource()
-                        ))
-                )
-        )
-        .then(
-            literal("channel")
-                .shortDescription("Returns the id of a channel with a given name.")
-                .then(
-                    argument("name", greedyString())
-                        .executes(context -> showChannelId(
-                            getString(context, "name"),
-                            context.getSource()
-                        ))
-                )
-        )
-        .build();
+  public FetchIdCommand() {
+    super(FetchIdCommand::runCommand, SuccessParser.wrapping(literal("fetch id")));
+    setData(DefaultDataKey.SHORT_DESCRIPTION, "Fetches the ID for a role, channel or user");
+    setData(DefaultDataKey.USAGE, "fetch id <channel|user|role> <name>");
   }
 
-  private int showRoleId(String name, CommandSource source) {
-    String roles = source.getMessage().getGuild().getRolesByName(name, true)
-        .stream()
-        .map(role -> "**" + role.getName() + "**: `" + role.getId() + "`")
-        .collect(Collectors.joining("\n", "**__Matching roles:__**\n\n", ""));
+  private static void runCommand(CommandContext context) throws ParseException {
+    String type = context.shift(word());
 
-    source.getContext().getMessageSender().sendMessage(
-        SimpleMessage.information(roles),
-        source.getChannel()
-    );
-
-    return 0;
+    switch (type.toLowerCase()) {
+      case "channel":
+        List<TextChannel> channels = context.getRequestContext()
+            .getGuild()
+            .getTextChannelsByName(context.shift(greedyPhrase()), true);
+        formatAndSendList(context, channels);
+        break;
+      case "user":
+        List<Member> members = context.getRequestContext()
+            .getGuild()
+            .getMembersByName(context.shift(greedyPhrase()), true);
+        formatAndSendList(context, members);
+        break;
+      case "role":
+        List<Role> roles = context.getRequestContext()
+            .getGuild()
+            .getRolesByName(context.shift(greedyPhrase()), true);
+        formatAndSendList(context, roles);
+        break;
+      default:
+        context.getMessageSender().sendMessage(
+            SimpleMessage.error("I don't understand the type '" + type + "'"),
+            context.getRequestContext().getMessage().getChannel()
+        );
+    }
   }
 
-  private int showChannelId(String name, CommandSource source) {
-    String roles = source.getMessage().getGuild().getChannels(false)
-        .stream()
-        .filter(channel -> channel.getName().equalsIgnoreCase(name))
-        .map(channel ->
-            "**" + channel.getName() + "**: `" + channel.getId() + "` (" + channel.getType() + ")"
-        )
-        .collect(Collectors.joining("\n", "**__Matching channels:__**\n\n", ""));
-
-    source.getContext().getMessageSender().sendMessage(
-        SimpleMessage.information(roles),
-        source.getChannel()
+  private static void formatAndSendList(CommandContext context,
+      List<? extends IMentionable> channels) {
+    String messageBody = channels.stream()
+        .map(it -> "**" + it.getAsMention() + "**: " + it.getId())
+        .collect(Collectors.joining("\n"));
+    context.getMessageSender().sendMessage(
+        SimpleMessage.success(messageBody),
+        context.getRequestContext().getMessage().getChannel()
     );
-
-    return 0;
   }
 }
