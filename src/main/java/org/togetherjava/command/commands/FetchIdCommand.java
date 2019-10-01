@@ -6,7 +6,6 @@ import static de.ialistannen.commandprocrastination.parsing.defaults.StringParse
 
 import de.ialistannen.commandprocrastination.autodiscovery.ActiveCommand;
 import de.ialistannen.commandprocrastination.command.tree.CommandNode;
-import de.ialistannen.commandprocrastination.command.tree.data.DefaultDataKey;
 import de.ialistannen.commandprocrastination.parsing.ParseException;
 import de.ialistannen.commandprocrastination.parsing.SuccessParser;
 import java.util.List;
@@ -18,13 +17,11 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import org.togetherjava.command.CommandContext;
 import org.togetherjava.messaging.SimpleMessage;
 
-@ActiveCommand(name = "fetchId", parentClass = PrefixedBaseCommand.class)
+@ActiveCommand(name = "fetch-id", parentClass = PrefixedBaseCommand.class)
 public class FetchIdCommand extends CommandNode<CommandContext> {
 
   public FetchIdCommand() {
     super(FetchIdCommand::runCommand, SuccessParser.wrapping(literal("fetch id")));
-    setData(DefaultDataKey.SHORT_DESCRIPTION, "Fetches the ID for a role, channel or user");
-    setData(DefaultDataKey.USAGE, "fetch id <channel|user|role> <name>");
   }
 
   private static void runCommand(CommandContext context) throws ParseException {

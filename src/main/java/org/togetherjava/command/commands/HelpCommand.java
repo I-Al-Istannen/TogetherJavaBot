@@ -44,17 +44,22 @@ public class HelpCommand extends CommandNode<CommandContext> {
 
     finalNode.getOptionalData(DefaultDataKey.USAGE)
         .map(usage -> "`" + usage + "`")
+        .or(() -> fetchFromMessages("usage", context, finalNode))
         .or(() -> Optional.of("*(approx)* `" + foundCommands.getChain().buildUsage() + "`"))
         .ifPresent(usage ->
             message.editEmbed(it -> it.addField("Usage", usage, true))
         );
 
-    finalNode.getOptionalData(DefaultDataKey.SHORT_DESCRIPTION).ifPresent(desc ->
-        message.editEmbed(it -> it.addField("Description (short)", desc.toString(), true))
-    );
-    finalNode.getOptionalData(DefaultDataKey.LONG_DESCRIPTION).ifPresent(desc ->
-        message.editEmbed(it -> it.setDescription(desc.toString()))
-    );
+    finalNode.getOptionalData(DefaultDataKey.SHORT_DESCRIPTION)
+        .or(() -> fetchFromMessages("short-description", context, finalNode))
+        .ifPresent(desc ->
+            message.editEmbed(it -> it.addField("Short description", desc.toString(), true))
+        );
+    finalNode.getOptionalData(DefaultDataKey.LONG_DESCRIPTION)
+        .or(() -> fetchFromMessages("long-description", context, finalNode))
+        .ifPresent(desc ->
+            message.editEmbed(it -> it.setDescription(desc.toString()))
+        );
 
     finalNode.getOptionalData(DefaultDataKey.PERMISSION).ifPresent(perm ->
         message.editEmbed(it -> it.addField("Permission", "`" + perm + "`", true))
@@ -63,5 +68,16 @@ public class HelpCommand extends CommandNode<CommandContext> {
     context.getMessageSender().sendMessage(
         message, context.getRequestContext().getChannel()
     );
+  }
+
+  private Optional<String> fetchFromMessages(String restPath, CommandContext commandContext,
+      CommandNode<CommandContext> node) {
+    if (!node.hasOptionalData(DefaultDataKey.IDENTIFIER)) {
+      return Optional.empty();
+    }
+    String identifier = node.<String>getOptionalData(DefaultDataKey.IDENTIFIER).orElseThrow();
+    String lookupPath = "commands." + identifier + "." + restPath;
+
+    return commandContext.getMessages().trOptional(lookupPath);
   }
 }

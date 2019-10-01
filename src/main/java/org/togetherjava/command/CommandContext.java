@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.User;
 import org.togetherjava.messaging.sending.MessageSender;
 import org.togetherjava.reactions.ReactionListener;
 import org.togetherjava.storage.sql.Database;
+import org.togetherjava.util.Messages;
 
 /**
  * The context for commands.
@@ -23,6 +24,7 @@ public class CommandContext extends GlobalContext {
   private JdaRequestContext requestContext;
   private Database database;
   private CommandFinder<CommandContext> commandFinder;
+  private Messages messages;
 
   /**
    * Creates a new command context.
@@ -45,6 +47,7 @@ public class CommandContext extends GlobalContext {
     this.requestContext = requestContext;
     this.database = database;
     this.commandFinder = commandFinder;
+    this.messages = new Messages();
   }
 
   /**
@@ -99,6 +102,15 @@ public class CommandContext extends GlobalContext {
    */
   public CommandFinder<CommandContext> getCommandFinder() {
     return commandFinder;
+  }
+
+  /**
+   * Returns the bot's messages.
+   *
+   * @return the messages
+   */
+  public Messages getMessages() {
+    return messages;
   }
 
   /**

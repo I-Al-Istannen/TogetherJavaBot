@@ -54,7 +54,7 @@ public class JavadocBaseCommand extends CommandNode<CommandContext> {
     );
   }
 
-  @ActiveCommand(name = "short-doc", parentClass = JavadocBaseCommand.class)
+  @ActiveCommand(name = "javadoc-short", parentClass = JavadocBaseCommand.class)
   public static class ShortCommand extends CommandNode<CommandContext> {
 
     private JavadocMessageSender javadocSender;

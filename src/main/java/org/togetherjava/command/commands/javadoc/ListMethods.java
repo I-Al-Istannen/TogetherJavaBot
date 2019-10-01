@@ -23,7 +23,7 @@ import org.togetherjava.messaging.PaginatedMessage;
 import org.togetherjava.messaging.SimpleMessage;
 import org.togetherjava.reactions.ReactionListener;
 
-@ActiveCommand(name = "list-methods", parentClass = JavadocBaseCommand.class)
+@ActiveCommand(name = "javadoc-list-methods", parentClass = JavadocBaseCommand.class)
 public class ListMethods extends CommandNode<CommandContext> {
 
   private JavadocMessageSender javadocSender;

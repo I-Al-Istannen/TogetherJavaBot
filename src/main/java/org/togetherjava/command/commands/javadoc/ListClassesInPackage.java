@@ -16,7 +16,7 @@ import org.togetherjava.messaging.BotMessage.MessageCategory;
 import org.togetherjava.messaging.PaginatedMessage;
 import org.togetherjava.reactions.ReactionListener;
 
-@ActiveCommand(name = "doc-list-packages", parentClass = JavadocBaseCommand.class)
+@ActiveCommand(name = "javadoc-list-packages", parentClass = JavadocBaseCommand.class)
 public class ListClassesInPackage extends CommandNode<CommandContext> {
 
   public ListClassesInPackage() {
