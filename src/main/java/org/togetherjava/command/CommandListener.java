@@ -22,19 +22,36 @@ import org.togetherjava.storage.sql.Database;
  */
 public class CommandListener extends ListenerAdapter {
 
+  private final Toml config;
   private final MessageSender sender;
+  private final ReactionListener reactionListener;
+  private final Database database;
   private JdaExecutor executor;
+  private final CommandFinder<CommandContext> commandFinder;
 
   public CommandListener(Toml config, MessageSender sender, ReactionListener reactionListener,
       Database database) {
+    this.config = config;
     this.sender = sender;
+    this.reactionListener = reactionListener;
+    this.database = database;
 
     CommandNode<CommandContext> rootCommand = new CommandDiscovery().findCommands(
-        new CommandContext(null, config, sender, reactionListener, database)
+        createBaseContext()
     );
-    CommandFinder<CommandContext> finder = new CommandFinder<>(rootCommand);
+    commandFinder = new CommandFinder<>(rootCommand);
 
-    this.executor = new JdaExecutor(finder, config, sender, reactionListener, database);
+    this.executor = new JdaExecutor(commandFinder, config, sender, reactionListener, database);
+  }
+
+  /**
+   * Creates a base context. The request context will be null.
+   *
+   * @return the created base context.
+   */
+  public CommandContext createBaseContext() {
+    // command finder is null only when called from the constructor
+    return new CommandContext(null, config, sender, reactionListener, database, commandFinder);
   }
 
   @Override

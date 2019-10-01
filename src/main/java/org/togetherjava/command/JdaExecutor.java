@@ -20,6 +20,7 @@ class JdaExecutor extends CommandExecutor<CommandContext, JdaRequestContext> {
   private final MessageSender sender;
   private final ReactionListener reactionListener;
   private final Database database;
+  private final CommandFinder<CommandContext> finder;
 
   JdaExecutor(CommandFinder<CommandContext> finder, Toml config, MessageSender sender,
       ReactionListener reactionListener, Database database) {
@@ -28,10 +29,11 @@ class JdaExecutor extends CommandExecutor<CommandContext, JdaRequestContext> {
     this.sender = sender;
     this.reactionListener = reactionListener;
     this.database = database;
+    this.finder = finder;
   }
 
   @Override
   protected CommandContext createContext(JdaRequestContext requestContext) {
-    return new CommandContext(requestContext, config, sender, reactionListener, database);
+    return new CommandContext(requestContext, config, sender, reactionListener, database, finder);
   }
 }

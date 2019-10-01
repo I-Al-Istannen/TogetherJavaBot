@@ -1,6 +1,7 @@
 package org.togetherjava.command;
 
 import com.moandjiezana.toml.Toml;
+import de.ialistannen.commandprocrastination.command.tree.CommandFinder;
 import de.ialistannen.commandprocrastination.context.GlobalContext;
 import de.ialistannen.commandprocrastination.context.RequestContext;
 import net.dv8tion.jda.api.entities.Guild;
@@ -21,6 +22,7 @@ public class CommandContext extends GlobalContext {
   private ReactionListener reactionListener;
   private JdaRequestContext requestContext;
   private Database database;
+  private CommandFinder<CommandContext> commandFinder;
 
   /**
    * Creates a new command context.
@@ -30,16 +32,19 @@ public class CommandContext extends GlobalContext {
    * @param sender the sender
    * @param reactionListener the reaction listener
    * @param database the database
+   * @param commandFinder the command finder
    */
   public CommandContext(JdaRequestContext requestContext, Toml config,
       MessageSender sender,
-      ReactionListener reactionListener, Database database) {
+      ReactionListener reactionListener, Database database,
+      CommandFinder<CommandContext> commandFinder) {
     super(requestContext);
     this.config = config;
     this.sender = sender;
     this.reactionListener = reactionListener;
     this.requestContext = requestContext;
     this.database = database;
+    this.commandFinder = commandFinder;
   }
 
   /**
@@ -85,6 +90,15 @@ public class CommandContext extends GlobalContext {
    */
   public Database getDatabase() {
     return database;
+  }
+
+  /**
+   * Returns the command finder.
+   *
+   * @return the command finder
+   */
+  public CommandFinder<CommandContext> getCommandFinder() {
+    return commandFinder;
   }
 
   /**

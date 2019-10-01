@@ -61,15 +61,18 @@ public class TogetherJavaBot {
     ReactionListener reactionListener = new ReactionListener();
     Database database = new Database(config.getString("database.connection-url"));
 
+    CommandListener commandListener = new CommandListener(
+        config, messageSender, reactionListener, database
+    );
     reactionListener.setContext(
-        new CommandContext(null, config, messageSender, reactionListener, database)
+        new CommandContext(null, config, messageSender, reactionListener, database, null)
     );
 
     jda = new JDABuilder(AccountType.BOT)
         .setToken(token)
         .addEventListeners(reactionListener)
         .addEventListeners(
-            new CommandListener(config, messageSender, reactionListener, database)
+            commandListener
         )
         .build()
         .awaitReady();
