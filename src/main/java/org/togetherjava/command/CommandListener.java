@@ -5,6 +5,7 @@ import de.ialistannen.commandprocrastination.autodiscovery.CommandDiscovery;
 import de.ialistannen.commandprocrastination.command.execution.AbnormalCommandResultException;
 import de.ialistannen.commandprocrastination.command.execution.CommandException;
 import de.ialistannen.commandprocrastination.command.execution.CommandNotFoundException;
+import de.ialistannen.commandprocrastination.command.execution.NoSeparatorException;
 import de.ialistannen.commandprocrastination.command.tree.CommandFinder;
 import de.ialistannen.commandprocrastination.command.tree.CommandNode;
 import de.ialistannen.commandprocrastination.parsing.ParseException;
@@ -67,7 +68,7 @@ public class CommandListener extends ListenerAdapter {
           event.getGuild()
       );
       executor.execute(content, context);
-    } catch (CommandNotFoundException ignored) {
+    } catch (CommandNotFoundException | NoSeparatorException ignored) {
     } catch (ParseException | AbnormalCommandResultException | CommandException e) {
       sender.sendMessage(SimpleMessage.error(e.getMessage()), event.getChannel());
     }
