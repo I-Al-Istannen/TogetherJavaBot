@@ -27,7 +27,8 @@ public class HelpCommand extends CommandNode<CommandContext> {
     String path = context.shift(greedyExistingPhrase());
 
     FindResult<CommandContext> foundCommands = context.getCommandFinder()
-        .find(new StringReader(path));
+        // Remove the need to specify the prefix
+        .find(getParent().orElseThrow(), new StringReader(path));
 
     CommandNode<CommandContext> finalNode = foundCommands.getChain().getFinalNode();
 
