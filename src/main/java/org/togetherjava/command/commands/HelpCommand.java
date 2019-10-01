@@ -37,6 +37,17 @@ public class HelpCommand extends CommandNode<CommandContext> {
         message.editEmbed(it -> it.addField("Name", name.toString(), true))
     );
 
+    finalNode.getHeadParser().getName().ifPresent(name ->
+        message.editEmbed(it -> it.addField("Keyword", '`' + name + '`', true))
+    );
+
+    finalNode.getOptionalData(DefaultDataKey.USAGE)
+        .map(usage -> "`" + usage + "`")
+        .or(() -> Optional.of("*(approx)* `" + foundCommands.getChain().buildUsage() + "`"))
+        .ifPresent(usage ->
+            message.editEmbed(it -> it.addField("Usage", usage, true))
+        );
+
     finalNode.getOptionalData(DefaultDataKey.SHORT_DESCRIPTION).ifPresent(desc ->
         message.editEmbed(it -> it.addField("Description (short)", desc.toString(), true))
     );
@@ -45,14 +56,8 @@ public class HelpCommand extends CommandNode<CommandContext> {
     );
 
     finalNode.getOptionalData(DefaultDataKey.PERMISSION).ifPresent(perm ->
-        message.editEmbed(it -> it.addField("Permission", perm.toString(), true))
+        message.editEmbed(it -> it.addField("Permission", "`" + perm + "`", true))
     );
-
-    finalNode.getOptionalData(DefaultDataKey.USAGE)
-        .or(() -> Optional.of("*(approx)* " + foundCommands.getChain().buildUsage()))
-        .ifPresent(usage ->
-            message.editEmbed(it -> it.addField("Usage", usage.toString(), true))
-        );
 
     context.getMessageSender().sendMessage(
         message, context.getRequestContext().getChannel()
