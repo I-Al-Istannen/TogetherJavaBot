@@ -67,13 +67,7 @@ public class CommandListener extends ListenerAdapter {
           event.getGuild()
       );
       executor.execute(content, context);
-    } catch (CommandNotFoundException e) {
-      sender.sendMessage(
-          SimpleMessage.error(
-              "Command not found! Usage: " + e.getResult().getChain().buildUsage().trim()
-          ),
-          event.getChannel()
-      );
+    } catch (CommandNotFoundException ignored) {
     } catch (ParseException | AbnormalCommandResultException | CommandException e) {
       sender.sendMessage(SimpleMessage.error(e.getMessage()), event.getChannel());
     }
