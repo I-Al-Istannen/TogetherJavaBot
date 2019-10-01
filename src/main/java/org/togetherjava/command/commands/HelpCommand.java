@@ -1,6 +1,6 @@
 package org.togetherjava.command.commands;
 
-import static de.ialistannen.commandprocrastination.parsing.defaults.StringParsers.greedyExistingPhrase;
+import static de.ialistannen.commandprocrastination.parsing.defaults.StringParsers.greedyPhrase;
 import static de.ialistannen.commandprocrastination.parsing.defaults.StringParsers.literal;
 
 import de.ialistannen.commandprocrastination.autodiscovery.ActiveCommand;
@@ -24,7 +24,7 @@ public class HelpCommand extends CommandNode<CommandContext> {
   }
 
   private void execute(CommandContext context) throws ParseException {
-    String path = context.shift(greedyExistingPhrase());
+    String path = context.shift(greedyPhrase());
 
     FindResult<CommandContext> foundCommands = context.getCommandFinder()
         // Remove the need to specify the prefix
