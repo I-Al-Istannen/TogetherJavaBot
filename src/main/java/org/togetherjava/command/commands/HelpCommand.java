@@ -35,7 +35,7 @@ public class HelpCommand extends CommandNode<CommandContext> {
     ComplexMessage message = new ComplexMessage(MessageCategory.INFORMATION);
 
     finalNode.getOptionalData(DefaultDataKey.IDENTIFIER).ifPresent(name ->
-        message.editEmbed(it -> it.addField("Name", name.toString(), true))
+        message.editEmbed(it -> it.setTitle(name.toString()))
     );
 
     finalNode.getHeadParser().getName().ifPresent(name ->
@@ -53,7 +53,7 @@ public class HelpCommand extends CommandNode<CommandContext> {
         message.editEmbed(it -> it.addField("Description (short)", desc.toString(), true))
     );
     finalNode.getOptionalData(DefaultDataKey.LONG_DESCRIPTION).ifPresent(desc ->
-        message.editEmbed(it -> it.addField("Description (long)", desc.toString(), true))
+        message.editEmbed(it -> it.setDescription(desc.toString()))
     );
 
     finalNode.getOptionalData(DefaultDataKey.PERMISSION).ifPresent(perm ->
