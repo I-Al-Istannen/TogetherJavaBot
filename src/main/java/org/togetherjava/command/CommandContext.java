@@ -82,6 +82,7 @@ public class CommandContext extends GlobalContext {
    *
    * @return the request context
    */
+  @Override
   public JdaRequestContext getRequestContext() {
     return requestContext;
   }
