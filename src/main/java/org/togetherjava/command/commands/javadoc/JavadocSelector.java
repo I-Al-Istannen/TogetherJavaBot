@@ -160,7 +160,7 @@ public class JavadocSelector {
       }
     }
 
-    return false;
+    return true;
   }
 
   private boolean hasSameParametersFuzzy(Invocable invocable) {
